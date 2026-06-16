@@ -1,0 +1,2808 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Bespoke-ly – Be the reason they remember</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --paper: #f4f1e8;
+                --paper-2: #ebe6d7;
+                --line: #d8d2bf;
+                --ink: #11241a;
+                --muted: #54655a;
+                --green: #143d26;
+                --ribbon: #001d00;
+                --gild: #b0863c;
+                --display: "Fraunces", Georgia, serif;
+                --body:
+                    "Instrument Sans", -apple-system, BlinkMacSystemFont,
+                    "Segoe UI", sans-serif;
+                --maxw: 1240px;
+                --rw: 185vw;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+            body {
+                margin: 0;
+                background: var(--paper);
+                color: var(--ink);
+                font-family: var(--body);
+                font-size: 18px;
+                line-height: 1.6;
+                -webkit-font-smoothing: antialiased;
+                overflow-x: hidden;
+            }
+            h1,
+            h2,
+            h3 {
+                font-family: var(--display);
+                font-weight: 400;
+                line-height: 1.02;
+                margin: 0;
+                letter-spacing: -0.015em;
+                color: var(--green);
+            }
+            p {
+                margin: 0;
+            }
+            a {
+                color: inherit;
+            }
+            .wrap {
+                max-width: var(--maxw);
+                margin: 0 auto;
+                padding: 0 28px;
+            }
+            .eyebrow {
+                font-size: 12.5px;
+                font-weight: 600;
+                letter-spacing: 0.22em;
+                text-transform: uppercase;
+                color: var(--gild);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .eyebrow::before {
+                content: "";
+                width: 26px;
+                height: 1px;
+                background: var(--gild);
+                display: inline-block;
+                opacity: 0.7;
+            }
+
+            .hdr {
+                position: fixed;
+                inset: 0 0 auto 0;
+                z-index: 60;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 28px;
+                background: color-mix(in srgb, var(--paper) 80%, transparent);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid transparent;
+                transition: border-color 0.3s;
+            }
+            .hdr.scrolled {
+                border-color: var(--line);
+            }
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                font-family: var(--display);
+                font-size: 21px;
+                color: var(--green);
+                text-decoration: none;
+                letter-spacing: -0.02em;
+            }
+            .brand svg {
+                width: 22px;
+                height: 28px;
+                display: block;
+            }
+            .nav {
+                display: flex;
+                align-items: center;
+                gap: 30px;
+            }
+            .nav a {
+                font-size: 14.5px;
+                color: var(--ink);
+                text-decoration: none;
+                opacity: 0.8;
+            }
+            .nav a:hover {
+                opacity: 1;
+            }
+            /* the header CTA is a .btn – keep its light text + full opacity (override the dimmed nav-link styles above) */
+            .nav a.btn {
+                opacity: 1;
+            }
+            .nav a.btn-primary {
+                color: var(--paper);
+            }
+            .btn {
+                font-family: var(--body);
+                font-size: 14.5px;
+                font-weight: 600;
+                border: none;
+                cursor: pointer;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 9px;
+                border-radius: 100px;
+                padding: 12px 22px;
+                transition:
+                    transform 0.25s,
+                    box-shadow 0.25s,
+                    background 0.25s;
+            }
+            .btn-primary {
+                background: var(--green);
+                color: var(--paper);
+            }
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 26px -12px var(--green);
+            }
+            .btn-ghost {
+                background: transparent;
+                color: var(--green);
+                border: 1px solid var(--line);
+                padding: 11px 21px;
+            }
+            .btn-ghost:hover {
+                background: var(--paper-2);
+                transform: translateY(-2px);
+            }
+            .btn .arr {
+                transition: transform 0.25s;
+            }
+            .btn:hover .arr {
+                transform: translateX(3px);
+            }
+            @media (max-width: 760px) {
+                .nav .navlink {
+                    display: none;
+                }
+            }
+            @media (max-width: 520px) {
+                .hdr {
+                    padding: 13px 16px;
+                }
+                .brand {
+                    font-size: 18px;
+                    gap: 9px;
+                }
+                .hdr .btn-primary {
+                    padding: 10px 15px;
+                    font-size: 13px;
+                }
+            }
+
+            /* hero is now the first block of the scroll journey (beat-hero) */
+            .beat-hero {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                position: relative;
+                padding: 120px 0 60px;
+                /* clip horizontally only, so the bottom card's drop-shadow isn't cut at the section edge */
+                overflow-x: clip;
+            }
+            .beat-hero .wrap {
+                display: block;
+                position: relative;
+                z-index: 2;
+            }
+            .hero-mark {
+                display: none;
+            } /* redundant: the spanning ribbon ghost-track now backs the hero */
+            .hero-eye {
+                margin-bottom: 26px;
+            }
+            .beat-hero h1 {
+                font-size: clamp(46px, 8.2vw, 108px);
+                max-width: 14ch;
+            }
+            .beat-hero h1 .soft {
+                font-style: italic;
+                color: var(--ink);
+            }
+            .hero-sub {
+                margin-top: 30px;
+                max-width: 46ch;
+                font-size: clamp(17px, 1.6vw, 21px);
+                color: var(--muted);
+            }
+            .hero-cta {
+                margin-top: 40px;
+                display: flex;
+                gap: 14px;
+                flex-wrap: wrap;
+            }
+            .hero-foot {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 30px;
+                z-index: 2;
+            }
+            .hero-foot .wrap {
+                display: flex;
+                align-items: center;
+                gap: 26px;
+                flex-wrap: wrap;
+                color: var(--muted);
+                font-size: 13px;
+            }
+            .hero-foot .names {
+                display: flex;
+                gap: 26px;
+                flex-wrap: wrap;
+                font-weight: 600;
+                letter-spacing: 0.16em;
+                color: var(--ink);
+                opacity: 0.55;
+                text-transform: uppercase;
+                font-size: 13px;
+            }
+            .scroll-hint {
+                position: absolute;
+                right: 28px;
+                bottom: 26px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 7px;
+                color: var(--muted);
+                font-size: 11px;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                z-index: 3;
+            }
+            .scroll-hint .dot {
+                width: 1px;
+                height: 34px;
+                background: linear-gradient(var(--gild), transparent);
+                animation: fall 1.8s infinite;
+            }
+            @keyframes fall {
+                0% {
+                    transform: scaleY(0);
+                    transform-origin: top;
+                }
+                40% {
+                    transform: scaleY(1);
+                    transform-origin: top;
+                }
+                60% {
+                    transform: scaleY(1);
+                    transform-origin: bottom;
+                }
+                100% {
+                    transform: scaleY(0);
+                    transform-origin: bottom;
+                }
+            }
+
+            /* ---- hero floating product cards ---- */
+            /* split-line headline: each .line clips its words so they rise into view */
+            .beat-hero h1 .line {
+                display: block;
+                /* clip the not-yet-risen word, but let descenders (y, g, p) bleed below the baseline */
+                overflow: clip;
+                overflow-clip-margin: 0.3em;
+            }
+            .beat-hero h1 .word {
+                display: inline-block;
+                will-change: transform;
+            }
+            /* anchored below the fixed header (≈60px) and above the trust bar so the cards never
+               crowd the nav or overlap the headline column */
+            .hero-burst {
+                position: absolute;
+                right: 0;
+                top: 150px;
+                bottom: 96px;
+                width: 40%;
+                pointer-events: none;
+                z-index: 2;
+            }
+            .hero-card {
+                position: absolute;
+                left: var(--l, 0);
+                top: var(--t, 0);
+                width: var(--w, 210px);
+                will-change: transform;
+                pointer-events: auto; /* hoverable (the burst itself stays click-through) */
+            }
+            /* hover brings the card to the front so its caption is fully readable (as in the beats) */
+            .hero-card:hover {
+                z-index: 10;
+            }
+            /* the chip inside flows in-place (override the scatter default of position:absolute).
+               GSAP owns the chip transform (intro + rotation); the wrapper owns parallax translate. */
+            .hero-burst .chip {
+                position: relative;
+                box-shadow: 0 34px 64px -30px rgba(0, 29, 0, 0.62);
+                transition: box-shadow 0.35s ease;
+            }
+            .hero-card:hover .chip {
+                box-shadow: 0 48px 80px -28px rgba(0, 29, 0, 0.7);
+            }
+            .reduced .hero-burst .chip {
+                opacity: 1;
+                transform: rotate(var(--rot, 0deg));
+            }
+            @media (max-width: 1100px) {
+                /* desktop-first showpiece: drop the floating cards before they collide with the copy */
+                .hero-burst {
+                    display: none;
+                }
+            }
+
+            /* ---- giant ribbon that scrolls WITH the page ---- */
+            .ribbon-scroll {
+                position: relative;
+                /* the ribbon SVG is drawn far wider than the viewport; clip it here so it can't expand
+                   the document (body's overflow-x:hidden gets propagated to the viewport and stops clipping). */
+                overflow-x: clip;
+            }
+            .ribbon-bg {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                pointer-events: none;
+                z-index: 1;
+            }
+            .ribbon-bg svg {
+                display: block;
+                height: 100%;
+                width: auto;
+                overflow: visible;
+            }
+            #ribbon-track {
+                fill: var(--ribbon);
+                opacity: 0.05;
+            }
+            #ribbon-fill {
+                fill: url(#satin);
+            }
+            /* 440 ≈ just above the ribbon's measured 428u max width: covers fully */
+            #revealStroke {
+                fill: none;
+                stroke: #fff;
+                stroke-width: 440;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            #penDot {
+                opacity: 0;
+            }
+            #penGlow {
+                opacity: 0;
+            }
+
+            .beats {
+                position: relative;
+                z-index: 2;
+            }
+            .beat {
+                min-height: 92vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 0 28px;
+            }
+            .beat .wrap {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 48px;
+                align-items: center;
+                width: 100%;
+            }
+            .beat.flip .copy {
+                order: 2;
+            }
+            .beat.flip .burst {
+                order: 1;
+            }
+            .copy {
+                max-width: 42ch;
+                position: relative;
+            }
+            .copy::before {
+                content: "";
+                position: absolute;
+                inset: -26px -36px;
+                z-index: -1;
+                background: radial-gradient(
+                    130% 105% at 45% 50%,
+                    var(--paper) 66%,
+                    rgba(244, 241, 232, 0.55) 82%,
+                    transparent
+                );
+            }
+            .copy h2 {
+                font-size: clamp(30px, 4.4vw, 58px);
+                margin: 18px 0 0;
+            }
+            .copy h2 em {
+                font-style: italic;
+                color: var(--ink);
+            }
+            .copy .lead {
+                margin-top: 20px;
+                color: var(--muted);
+                font-size: clamp(16px, 1.5vw, 19px);
+            }
+            .copy .b-cta {
+                margin-top: 28px;
+                display: flex;
+                gap: 13px;
+                flex-wrap: wrap;
+            }
+
+            .r {
+                opacity: 0;
+                transform: translateY(26px);
+            }
+            .reduced .r {
+                opacity: 1;
+                transform: none;
+            }
+
+            .burst {
+                position: relative;
+                min-height: 440px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .chip {
+                position: absolute;
+                background: var(--paper);
+                border: 1px solid var(--line);
+                border-radius: 18px;
+                padding: 18px 20px;
+                box-shadow: 0 26px 50px -28px rgba(0, 29, 0, 0.55);
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                width: 185px;
+                opacity: 0;
+                /* cards are display objects, not text – keep the default cursor and don't let them be selected/highlighted */
+                cursor: default;
+                user-select: none;
+                -webkit-user-select: none;
+            }
+            .reduced .chip {
+                opacity: 1;
+                transform: translate(var(--tx, 0px), var(--ty, 0px))
+                    rotate(var(--rot, 0deg));
+            }
+            .reduced #penDot,
+            .reduced #penGlow {
+                opacity: 0;
+            }
+            .chip .ic {
+                width: 42px;
+                height: 42px;
+                color: var(--green);
+            }
+            .chip .ct {
+                font-family: var(--display);
+                font-size: 19px;
+                color: var(--green);
+                line-height: 1.05;
+            }
+            .chip .cs {
+                font-size: 13.5px;
+                color: var(--muted);
+                line-height: 1.4;
+            }
+            .chip.lg {
+                width: 215px;
+            }
+            .chip.tag {
+                flex-direction: row;
+                align-items: center;
+                width: auto;
+                gap: 10px;
+                padding: 12px 18px;
+                border-radius: 100px;
+            }
+            .chip.tag .ct {
+                font-family: var(--body);
+                font-size: 14px;
+                font-weight: 600;
+            }
+            /* negative "stakes" pills read muted/desaturated, then decay away on scroll */
+            .chip.tag.neg {
+                background: var(--paper-2);
+            }
+            .chip.tag.neg .ct {
+                color: var(--muted);
+                font-weight: 500;
+            }
+            /* the "unforgettable" card wins the contrast: warm gild ring + lift */
+            .chip.photo.win .media-wrap {
+                box-shadow: inset 0 0 0 2px var(--gild);
+            }
+            .reduced .chip.tag.neg {
+                opacity: 0.5;
+            }
+            /* positive "transformation" pills – gold-ticked wins, with a warm tint */
+            .chip.tag.pos {
+                background: color-mix(in srgb, var(--gild) 9%, var(--paper));
+                border-color: color-mix(in srgb, var(--gild) 45%, var(--line));
+            }
+            .chip.tag.pos .ct {
+                color: var(--green);
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .chip.tag.pos .ct::before {
+                content: "✓";
+                color: var(--gild);
+                font-weight: 700;
+                font-size: 13px;
+            }
+
+            /* ---- Ambient idle float: the movable cards/pills drift gently at all times.
+               Uses the INDIVIDUAL `translate` property so it composes with (not overwrites) GSAP's
+               `transform`, which still owns the scatter position + cursor tilt/parallax on top. ---- */
+            @media (prefers-reduced-motion: no-preference) {
+                @keyframes chipFloatA {
+                    0%,
+                    100% {
+                        translate: 0 0;
+                    }
+                    50% {
+                        translate: 0 -9px;
+                    }
+                }
+                @keyframes chipFloatB {
+                    0%,
+                    100% {
+                        translate: 0 0;
+                    }
+                    50% {
+                        translate: -7px 6px;
+                    }
+                }
+                @keyframes chipFloatC {
+                    0%,
+                    100% {
+                        translate: 0 0;
+                    }
+                    50% {
+                        translate: 6px -7px;
+                    }
+                }
+                /* scattered beat chips + the hero cards drift; the proof grid stays put */
+                .burst .chip,
+                .hero-card .chip {
+                    animation: chipFloatA 6s ease-in-out infinite;
+                    will-change: translate;
+                }
+                .burst .chip:nth-child(3n + 2),
+                .hero-card:nth-child(3n + 2) .chip {
+                    animation-name: chipFloatB;
+                    animation-duration: 7.5s;
+                }
+                .burst .chip:nth-child(3n + 3),
+                .hero-card:nth-child(3n + 3) .chip {
+                    animation-name: chipFloatC;
+                    animation-duration: 5.5s;
+                }
+                /* desync them so they never bob in unison */
+                .burst .chip:nth-child(2n) {
+                    animation-delay: -2.5s;
+                }
+                .burst .chip:nth-child(3n) {
+                    animation-delay: -4.2s;
+                }
+                #proof .chip {
+                    animation: none;
+                }
+            }
+            .wordmark {
+                font-family: var(--body);
+                font-weight: 600;
+                letter-spacing: 0.12em;
+                font-size: 22px;
+                color: var(--green);
+            }
+            .stat .n {
+                font-family: var(--display);
+                font-size: 40px;
+                color: var(--green);
+                line-height: 1;
+                display: block;
+            }
+            .stat .l {
+                font-size: 13px;
+                color: var(--muted);
+                letter-spacing: 0.04em;
+            }
+
+            /* ---- media chips (real photography / logos) ---- */
+            .chip.photo {
+                padding: 10px;
+                gap: 11px;
+                width: 212px;
+            }
+            .chip.photo.lg {
+                width: 240px;
+            }
+            /* gradient + label sit behind the <img> so a not-yet-supplied file still reads as an intentional placeholder */
+            .media-wrap {
+                position: relative;
+                width: 100%;
+                border-radius: 12px;
+                overflow: hidden;
+                background: linear-gradient(
+                    150deg,
+                    #1c5232,
+                    #0a3018 58%,
+                    #001d00
+                );
+            }
+            .media-wrap::after {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                padding: 24px 13px 11px;
+                font-size: 10.5px;
+                font-weight: 600;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.82);
+                background: linear-gradient(transparent, rgba(0, 0, 0, 0.42));
+            }
+            .chip-media {
+                position: relative;
+                z-index: 1;
+                display: block;
+                width: 100%;
+                aspect-ratio: 4/5;
+                object-fit: cover;
+                border: 0;
+            }
+            .chip-media.missing {
+                opacity: 0;
+            }
+            .chip.photo .chip-cap {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+                padding: 0 6px 4px;
+            }
+            .chip.photo .ct {
+                font-size: 16.5px;
+            }
+            .chip.photo .cs {
+                font-size: 12.5px;
+            }
+            .chip-detail {
+                font-size: 12.5px;
+                color: var(--green);
+                line-height: 1.35;
+            }
+
+            /* ---- Beats 02 & 04: hover to lift/tilt a card and expand its detail
+               (effects live on inner elements – never the chip itself, which GSAP transforms) ---- */
+            #guide .chip.photo,
+            .beat-transform .chip.photo {
+                transition:
+                    box-shadow 0.35s ease,
+                    border-color 0.35s ease;
+            }
+            #guide .chip.photo .media-wrap,
+            .beat-transform .chip.photo .media-wrap {
+                transition:
+                    box-shadow 0.35s ease,
+                    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+                transform-style: preserve-3d;
+            }
+            #guide .chip.photo .chip-media,
+            .beat-transform .chip.photo .chip-media {
+                transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
+            }
+            /* the detail line is collapsed until hover, then expands in */
+            #guide .chip-detail,
+            .beat-transform .chip-detail {
+                display: block;
+                max-height: 0;
+                opacity: 0;
+                overflow: hidden;
+                transition:
+                    max-height 0.4s ease,
+                    opacity 0.3s ease,
+                    margin-top 0.4s ease;
+            }
+            #guide .chip.photo:hover,
+            .beat-transform .chip.photo:hover {
+                z-index: 6;
+                border-color: var(--gild);
+                box-shadow: 0 44px 78px -28px rgba(0, 29, 0, 0.62);
+            }
+            #guide .chip.photo:hover .chip-media,
+            .beat-transform .chip.photo:hover .chip-media {
+                transform: scale(1.07);
+            }
+            #guide .chip.photo:hover .media-wrap,
+            .beat-transform .chip.photo:hover .media-wrap {
+                box-shadow: inset 0 0 0 2px var(--gild);
+            }
+            /* beat 04 cards get a subtle 3D tilt on the image area for a tactile, premium feel */
+            .beat-transform .chip.photo:hover .media-wrap {
+                transform: perspective(700px) rotateX(4deg) scale(1.03);
+            }
+            #guide .chip.photo:hover .chip-detail,
+            .beat-transform .chip.photo:hover .chip-detail {
+                max-height: 80px;
+                opacity: 1;
+                margin-top: 5px;
+            }
+            .chip.logo {
+                width: 172px;
+                height: 96px;
+                padding: 14px;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+            }
+            /* the loaded mark sits directly on the paper card, shown in full brand colour */
+            .chip.logo .logo-mark {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                padding: 24px;
+            }
+            /* wordmark is the FALLBACK – shown only when no logo file loads (JS hides it on a successful load) */
+            .chip.logo .wordmark {
+                color: var(--green);
+                opacity: 0.8;
+            }
+
+            /* ---- Beat 03 proof: tidy logo grid + stat row (overrides the scatter layout) ---- */
+            #proof .burst {
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: center;
+                min-height: 0;
+                gap: 16px;
+            }
+            #proof .logo-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+            }
+            #proof .stat-row {
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            /* flow in place (not scattered); GSAP cascades them in */
+            #proof .chip {
+                position: relative;
+                opacity: 0;
+            }
+            #proof .chip.logo {
+                width: 100%;
+                height: 88px;
+                transition:
+                    box-shadow 0.35s ease,
+                    border-color 0.35s ease,
+                    filter 0.35s ease;
+            }
+            #proof .chip.logo .logo-mark,
+            #proof .chip.logo .wordmark {
+                transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+            }
+            /* spotlight: while inspecting the wall, the un-hovered clients recede so each gets a moment */
+            #proof .logo-grid:hover .chip.logo {
+                filter: brightness(0.82) saturate(0.8) contrast(0.96);
+            }
+            #proof .logo-grid .chip.logo:hover {
+                filter: none;
+                border-color: var(--gild);
+                box-shadow: 0 30px 52px -22px rgba(0, 29, 0, 0.55);
+                z-index: 3;
+            }
+            #proof .chip.logo:hover .logo-mark,
+            #proof .chip.logo:hover .wordmark {
+                transform: scale(1.09);
+            }
+            #proof .chip.lg {
+                width: auto;
+                min-width: 140px;
+                align-items: center;
+                text-align: center;
+            }
+            .reduced #proof .chip {
+                opacity: 1;
+            }
+            @media (max-width: 820px) {
+                #proof .logo-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                #proof .chip.logo {
+                    height: 76px;
+                }
+                /* keep the two-up mobile grid steady – no idle float there */
+                .burst .chip {
+                    animation: none;
+                }
+            }
+
+            .beat.cta-beat .wrap {
+                grid-template-columns: 1fr;
+                text-align: center;
+                justify-items: center;
+            }
+            /* the climax should land WITH the marquee, not a full screen above it:
+               on desktop the CTA collapses to its content height + breathing room so both share a screen */
+            @media (min-width: 821px) {
+                .beat.cta-beat {
+                    min-height: auto;
+                    padding-top: 11vh;
+                    padding-bottom: 4vh;
+                }
+            }
+            .beat.cta-beat .copy {
+                max-width: 30ch;
+                margin: 0 auto;
+            }
+            .beat.cta-beat .copy::before {
+                inset: -40px -60px;
+                background: radial-gradient(
+                    120% 110% at 50% 50%,
+                    var(--paper) 60%,
+                    transparent
+                );
+            }
+            .beat.cta-beat h2 {
+                font-size: clamp(34px, 5vw, 66px);
+                text-wrap: balance; /* even line lengths so the long words don't read as ragged */
+            }
+            /* ---- Beat 05 finale: a gold glow pulse on the closing headline when the ribbon completes
+               (done in JS via color/text-shadow so it can never clip the long words) ---- */
+            /* magnetic primary CTA – eases toward the cursor (JS) + a gold ripple on arrival */
+            .beat.cta-beat .btn-primary {
+                position: relative;
+                will-change: transform;
+            }
+            .beat.cta-beat .btn-primary.pulse::after {
+                content: "";
+                position: absolute;
+                inset: -3px;
+                border-radius: 100px;
+                box-shadow: 0 0 0 0 rgba(176, 134, 60, 0.55);
+                animation: ctaPulse 1.6s ease-out 2;
+                pointer-events: none;
+            }
+            @keyframes ctaPulse {
+                to {
+                    box-shadow: 0 0 0 20px rgba(176, 134, 60, 0);
+                }
+            }
+
+            /* ---- "Explore our work" marquee – full-bleed autoplaying strip bridging CTA → footer ---- */
+            .worktrack {
+                position: relative;
+                z-index: 5;
+                background: var(--paper);
+                padding: 8px 0 70px;
+                overflow-x: clip; /* contain the strip horizontally but let card shadows breathe vertically */
+            }
+            .worktrack-head {
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+                gap: 18px;
+                margin-bottom: 18px;
+                flex-wrap: wrap;
+            }
+            .worktrack-hint {
+                font-size: 13px;
+                color: var(--muted);
+                letter-spacing: 0.04em;
+            }
+            .marquee {
+                position: relative;
+                width: 100%;
+                /* clip horizontally (the long row) but keep vertical visible so drop-shadows aren't cut.
+                   A mask can't be used here – it would clip the shadows too – so the edges fade via ::before/::after. */
+                overflow-x: clip;
+                overflow-y: visible;
+                cursor: grab;
+                touch-action: pan-y; /* let vertical page scroll through; we handle horizontal drag */
+                -webkit-user-select: none;
+                user-select: none;
+            }
+            /* stop the browser from "picking up" a card image as a native drag */
+            .marquee img,
+            .marquee a {
+                -webkit-user-drag: none;
+                user-drag: none;
+            }
+            /* soft paper fade at each edge (overlay, not a mask, so shadows still show) */
+            .marquee::before,
+            .marquee::after {
+                content: "";
+                position: absolute;
+                top: -12px;
+                bottom: -92px;
+                width: 84px;
+                z-index: 4;
+                pointer-events: none;
+            }
+            .marquee::before {
+                left: 0;
+                background: linear-gradient(90deg, var(--paper), transparent);
+            }
+            .marquee::after {
+                right: 0;
+                background: linear-gradient(270deg, var(--paper), transparent);
+            }
+            .marquee.dragging {
+                cursor: grabbing;
+            }
+            .marquee-row {
+                display: flex;
+                width: max-content;
+                padding: 8px 0;
+                will-change: transform;
+            }
+            .work-card {
+                flex: 0 0 auto;
+                width: 340px;
+                margin-right: 22px; /* trailing margin on every card so the cloned set tiles seamlessly */
+                display: flex;
+                flex-direction: column;
+                gap: 13px;
+                text-decoration: none;
+                color: var(--green);
+                cursor: inherit; /* show the grab/grabbing cursor, not a link pointer */
+            }
+            .work-card .media-wrap {
+                width: 100%;
+                aspect-ratio: 4 / 3;
+                border-radius: 16px;
+                box-shadow: 0 26px 50px -30px rgba(0, 29, 0, 0.5);
+                transition:
+                    box-shadow 0.35s ease,
+                    transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+            }
+            /* landscape thumbnails (override the portrait 4/5 default used in the beats) */
+            .work-card .chip-media {
+                aspect-ratio: 4 / 3;
+            }
+            .work-title {
+                font-family: var(--display);
+                font-size: 21px;
+                color: var(--green);
+                padding-left: 2px;
+            }
+            .work-card:hover .media-wrap {
+                transform: translateY(-6px);
+                box-shadow: 0 40px 66px -28px rgba(0, 29, 0, 0.6);
+            }
+            .work-card:hover .chip-media {
+                transform: scale(1.05);
+            }
+            .work-card .chip-media {
+                transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+            }
+            /* reduced-motion / no-JS: not animated, just a tidy horizontally-scrollable rail */
+            .reduced .marquee {
+                overflow-x: auto;
+            }
+            @media (max-width: 820px) {
+                .worktrack {
+                    padding: 48px 0 64px;
+                }
+                .work-card {
+                    width: 250px;
+                }
+            }
+
+            .foot {
+                background: var(--ribbon);
+                color: #cfe8d4;
+                padding: 88px 0 40px;
+                position: relative;
+                z-index: 5;
+            }
+            .foot .wrap {
+                display: grid;
+                grid-template-columns: 1.4fr 1fr 1fr;
+                gap: 40px;
+            }
+            .foot h3 {
+                color: #fff;
+                font-size: 34px;
+                max-width: 16ch;
+            }
+            .foot .col h4 {
+                font-size: 12px;
+                letter-spacing: 0.18em;
+                text-transform: uppercase;
+                color: #7fb592;
+                margin: 0 0 16px;
+                font-family: var(--body);
+                font-weight: 600;
+            }
+            .foot .col a {
+                display: block;
+                color: #cfe8d4;
+                text-decoration: none;
+                opacity: 0.85;
+                margin-bottom: 10px;
+                font-size: 15px;
+            }
+            .foot .col a:hover {
+                opacity: 1;
+            }
+            .foot .base {
+                grid-column: 1/-1;
+                border-top: 1px solid rgba(255, 255, 255, 0.12);
+                margin-top: 40px;
+                padding-top: 24px;
+                display: flex;
+                justify-content: space-between;
+                color: #7fb592;
+                font-size: 13px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            @media (max-width: 820px) {
+                body {
+                    font-size: 17px;
+                }
+                /* ribbon is a faint full-height ghost watermark on mobile (no scrub) */
+                .ribbon-bg {
+                    top: 0;
+                    bottom: 0;
+                    height: 100%;
+                    width: auto;
+                    left: 50%;
+                }
+                .ribbon-bg svg {
+                    height: 100%;
+                    width: auto;
+                }
+                .beat {
+                    min-height: auto;
+                    padding: 66px 22px;
+                }
+                .beat .wrap,
+                .beat.cta-beat .wrap {
+                    grid-template-columns: 1fr;
+                    gap: 22px;
+                }
+                .beat.flip .copy {
+                    order: 1;
+                }
+                .beat.flip .burst {
+                    order: 2;
+                }
+                /* media chips flow in a tidy two-up grid instead of scattering */
+                .burst {
+                    min-height: 0;
+                    flex-wrap: wrap;
+                    align-items: flex-start;
+                    justify-content: center;
+                    gap: 14px;
+                }
+                .burst .chip {
+                    position: relative;
+                    transform: none;
+                    width: 46%;
+                    max-width: 46%;
+                    box-shadow: 0 16px 34px -22px rgba(0, 29, 0, 0.5);
+                }
+                .chip.photo,
+                .chip.photo.lg,
+                .chip.logo,
+                .chip.lg {
+                    width: 46%;
+                    max-width: 46%;
+                }
+                .chip.tag {
+                    width: auto;
+                    max-width: none;
+                }
+                .foot .wrap {
+                    grid-template-columns: 1fr;
+                }
+                .hero-mark {
+                    display: none;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                html {
+                    scroll-behavior: auto;
+                }
+                .scroll-hint,
+                .hero-mark {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="hdr" id="hdr">
+            <a class="brand" href="#top">
+                <svg viewBox="0 0 4235 5355" aria-hidden="true">
+                    <path
+                        d="M2880.88 3136.41C3419.96 3095.14 3844.5 2992.93 4092.03 2467.63C4294.92 2037.09 4329.87 1540.92 3864.38 1275.66C3526.67 1083.24 3108.21 1148 2780.06 1325.45C2388.94 1536.92 2100 1938.46 1678.75 2089.91C1523.48 2145.73 1209.44 2187.72 1186.35 1957.53C1158.69 1681.97 1314.44 1398.56 1500.01 1206.24C1622.02 1079.81 1771.59 979.575 1894.42 854.019C2129.47 613.73 2356.15 146.799 1882.42 20.5923C1728.02 -20.5516 1560.76 0.645235 1421.45 78.0338C1408.38 85.3077 1364.44 110.279 1361.1 122.252L1400.19 303.525C1404.76 307.5 1452.17 281.329 1462.83 277.604C1611.27 225.612 1843.87 221.313 1971.01 326.247C2149.47 473.525 1864.38 637.251 1756.49 710.04C1651.52 780.88 1543.5 845.095 1443.51 923.659C1107.66 1187.59 817.241 1576.34 1062.74 2008.22C1179.19 2213.12 1305.37 2393.97 1558.35 2429.36C2372.58 2543.29 2798.1 1304.25 3603.3 1621.56C3845.68 1717.07 4046.93 1990.73 4025.1 2256.29C4009.55 2445.38 3728.9 2597.94 3570.16 2659.05C3369.87 2736.19 3170.8 2767.54 2958.9 2793.18C2745.03 2819.08 2439.84 2820.03 2264.94 2953.66C2073.42 3100.04 2072.03 3336.08 2214.62 3518.9C2466.04 3841.33 2845.56 3623.96 3176.9 3634.21C3461.45 3642.98 3741.29 3805.91 3697.07 4124.86C3685.28 4209.72 3653.78 4285.76 3583.58 4337.83C3326.45 4528.55 2771.71 4473.06 2468.2 4425.14C2242.68 4389.57 2020.7 4332.8 1800.41 4274.86L1795.78 4256.87C1901.08 3845.55 1822.49 3303.41 1465.94 3032.67C1187.11 2820.95 804.025 2855.75 659.682 3198.72C615.261 3304.31 552.072 3516.05 553.78 3627.83C556.669 3819.11 676.038 3981.68 820.231 4095.89C1043.62 4272.84 1325.87 4375.7 1601.69 4440.89C1607.22 4442.44 1608.75 4444.36 1608.53 4450.16C1607.42 4481.28 1586.72 4553.85 1577.32 4586.79C1455.69 5013.6 1024.5 5284.49 599.357 5066.85C435.316 4982.88 294.415 4842.85 189.92 4693.4L0 4840.31C145.172 5051.87 353.484 5264.79 611.04 5331.13C1085.02 5453.21 1446.9 5086.37 1636.04 4699.43C1672.32 4625.19 1698.93 4545.2 1735.13 4471.98L2395.42 4592.47C2895.23 4698.18 3809.23 4625.34 3968.29 4028.07C4093.67 3557.29 3658.88 3232.69 3217.63 3272.29C2969.65 3294.51 2600.46 3494.48 2370.12 3427.36C2307.63 3409.17 2230.77 3359.37 2266.58 3285.63C2337.78 3138.98 2738.78 3147.31 2880.86 3136.41H2880.88ZM834.954 3682.83C748.072 3552.85 642.672 3292.58 851.763 3222.32C1013.64 3167.9 1191.03 3264.86 1304.64 3374C1530.36 3590.86 1611.57 3913.44 1613.9 4218.07C1327.76 4116.09 1006.86 3940.04 834.954 3682.83Z"
+                        fill-rule="evenodd"
+                        fill="#143D26"
+                    />
+                </svg>
+                Bespoke-ly
+            </a>
+            <nav class="nav">
+                <a class="navlink" href="#guide">What we do</a>
+                <a class="navlink" href="#proof">Clients</a>
+                <a class="navlink" href="#start">Work with us</a>
+                <a class="btn btn-primary" href="#start"
+                    >Start your project <span class="arr">&rarr;</span></a
+                >
+            </nav>
+        </header>
+
+        <section class="ribbon-scroll" id="story">
+            <div class="beat-hero" id="top">
+                <div class="hero-mark" aria-hidden="true">
+                    <svg viewBox="0 0 4235 5355">
+                        <path
+                            d="M2880.88 3136.41C3419.96 3095.14 3844.5 2992.93 4092.03 2467.63C4294.92 2037.09 4329.87 1540.92 3864.38 1275.66C3526.67 1083.24 3108.21 1148 2780.06 1325.45C2388.94 1536.92 2100 1938.46 1678.75 2089.91C1523.48 2145.73 1209.44 2187.72 1186.35 1957.53C1158.69 1681.97 1314.44 1398.56 1500.01 1206.24C1622.02 1079.81 1771.59 979.575 1894.42 854.019C2129.47 613.73 2356.15 146.799 1882.42 20.5923C1728.02 -20.5516 1560.76 0.645235 1421.45 78.0338C1408.38 85.3077 1364.44 110.279 1361.1 122.252L1400.19 303.525C1404.76 307.5 1452.17 281.329 1462.83 277.604C1611.27 225.612 1843.87 221.313 1971.01 326.247C2149.47 473.525 1864.38 637.251 1756.49 710.04C1651.52 780.88 1543.5 845.095 1443.51 923.659C1107.66 1187.59 817.241 1576.34 1062.74 2008.22C1179.19 2213.12 1305.37 2393.97 1558.35 2429.36C2372.58 2543.29 2798.1 1304.25 3603.3 1621.56C3845.68 1717.07 4046.93 1990.73 4025.1 2256.29C4009.55 2445.38 3728.9 2597.94 3570.16 2659.05C3369.87 2736.19 3170.8 2767.54 2958.9 2793.18C2745.03 2819.08 2439.84 2820.03 2264.94 2953.66C2073.42 3100.04 2072.03 3336.08 2214.62 3518.9C2466.04 3841.33 2845.56 3623.96 3176.9 3634.21C3461.45 3642.98 3741.29 3805.91 3697.07 4124.86C3685.28 4209.72 3653.78 4285.76 3583.58 4337.83C3326.45 4528.55 2771.71 4473.06 2468.2 4425.14C2242.68 4389.57 2020.7 4332.8 1800.41 4274.86L1795.78 4256.87C1901.08 3845.55 1822.49 3303.41 1465.94 3032.67C1187.11 2820.95 804.025 2855.75 659.682 3198.72C615.261 3304.31 552.072 3516.05 553.78 3627.83C556.669 3819.11 676.038 3981.68 820.231 4095.89C1043.62 4272.84 1325.87 4375.7 1601.69 4440.89C1607.22 4442.44 1608.75 4444.36 1608.53 4450.16C1607.42 4481.28 1586.72 4553.85 1577.32 4586.79C1455.69 5013.6 1024.5 5284.49 599.357 5066.85C435.316 4982.88 294.415 4842.85 189.92 4693.4L0 4840.31C145.172 5051.87 353.484 5264.79 611.04 5331.13C1085.02 5453.21 1446.9 5086.37 1636.04 4699.43C1672.32 4625.19 1698.93 4545.2 1735.13 4471.98L2395.42 4592.47C2895.23 4698.18 3809.23 4625.34 3968.29 4028.07C4093.67 3557.29 3658.88 3232.69 3217.63 3272.29C2969.65 3294.51 2600.46 3494.48 2370.12 3427.36C2307.63 3409.17 2230.77 3359.37 2266.58 3285.63C2337.78 3138.98 2738.78 3147.31 2880.86 3136.41H2880.88ZM834.954 3682.83C748.072 3552.85 642.672 3292.58 851.763 3222.32C1013.64 3167.9 1191.03 3264.86 1304.64 3374C1530.36 3590.86 1611.57 3913.44 1613.9 4218.07C1327.76 4116.09 1006.86 3940.04 834.954 3682.83Z"
+                            fill-rule="evenodd"
+                            fill="#001D00"
+                        />
+                    </svg>
+                </div>
+                <div class="wrap">
+                    <div class="hero-eye eyebrow">
+                        Bespoke corporate gifting · designed &amp; made
+                    </div>
+                    <h1>
+                        <span class="line"
+                            ><span class="word">Be</span>
+                            <span class="word">the</span>
+                            <span class="word">reason</span></span
+                        ><span class="line"
+                            ><span class="word">they</span>
+                            <span class="word soft">remember.</span></span
+                        >
+                    </h1>
+                    <p class="hero-sub">
+                        We design and produce bespoke gifts for the world's most
+                        demanding brands.
+                    </p>
+                    <div class="hero-cta">
+                        <a class="btn btn-primary" href="#start"
+                            >Start your project
+                            <span class="arr">&rarr;</span></a
+                        >
+                        <a class="btn btn-ghost" href="#guide"
+                            >See how it works</a
+                        >
+                    </div>
+                </div>
+                <div class="hero-burst" aria-hidden="true">
+                    <div
+                        class="hero-card"
+                        style="--l: 34%; --t: 4%; --rot: -5deg; --w: 200px"
+                        data-depth="26"
+                    >
+                        <div class="chip photo">
+                            <div class="media-wrap" data-label="Bespoke">
+                                <img
+                                    class="chip-media"
+                                    src="assets/hero-bespoke.webp"
+                                    alt="A bespoke Bespoke-ly gift"
+                                    loading="lazy"
+                                    onerror="this.classList.add('missing')"
+                                />
+                            </div>
+                            <div class="chip-cap">
+                                <span class="ct">Designed &amp; made</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="hero-card"
+                        style="--l: 56%; --t: 38%; --rot: 5deg; --w: 212px"
+                        data-depth="46"
+                    >
+                        <div class="chip photo lg">
+                            <div class="media-wrap" data-label="Unboxing">
+                                <img
+                                    class="chip-media"
+                                    src="assets/hero-unboxing.jpg"
+                                    alt="A pristine bespoke unboxing moment"
+                                    loading="lazy"
+                                    onerror="this.classList.add('missing')"
+                                />
+                            </div>
+                            <div class="chip-cap">
+                                <span class="ct">The unboxing</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="hero-card"
+                        style="--l: 28%; --t: 64%; --rot: -3deg; --w: 188px"
+                        data-depth="34"
+                    >
+                        <div class="chip photo">
+                            <div class="media-wrap" data-label="On-brand">
+                                <img
+                                    class="chip-media"
+                                    src="assets/hero-onbrand.png"
+                                    alt="On-brand detailing on a Bespoke-ly gift"
+                                    loading="lazy"
+                                    onerror="this.classList.add('missing')"
+                                />
+                            </div>
+                            <div class="chip-cap">
+                                <span class="ct">On-brand, always</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-foot">
+                    <div class="wrap">
+                        <span>Trusted to gift on behalf of</span>
+                        <span class="names"
+                            ><b>Netflix</b><b>HSBC</b><b>Nike</b><b>OpenAI</b
+                            ><b>Spotify</b></span
+                        >
+                    </div>
+                </div>
+                <div class="scroll-hint" aria-hidden="true">
+                    Scroll
+                    <div class="dot"></div>
+                </div>
+            </div>
+            <!-- /beat-hero -->
+
+            <div class="ribbon-bg">
+                <svg id="ribbonsvg" viewBox="0 0 4235 5355" aria-hidden="true">
+                    <defs>
+                        <linearGradient
+                            id="satin"
+                            x1="0"
+                            y1="0"
+                            x2="0.45"
+                            y2="1"
+                        >
+                            <stop offset="0" stop-color="#1C5232" />
+                            <stop offset="0.5" stop-color="#0A3018" />
+                            <stop offset="1" stop-color="#001D00" />
+                        </linearGradient>
+                        <filter
+                            id="glow"
+                            x="-120%"
+                            y="-120%"
+                            width="340%"
+                            height="340%"
+                        >
+                            <feGaussianBlur stdDeviation="50" />
+                        </filter>
+                        <mask
+                            id="reveal"
+                            maskUnits="userSpaceOnUse"
+                            x="-500"
+                            y="-500"
+                            width="5235"
+                            height="6355"
+                        >
+                            <path
+                                id="revealStroke"
+                                d="M 1404.5 290.9 C 1407.6 281.8 1414.4 254.5 1422.7 236.4 C 1431.1 218.2 1446.2 193.2 1454.5 181.8 C 1462.9 170.5 1456.8 174.2 1472.7 168.2 C 1488.6 162.1 1509.8 153.0 1550.0 145.4 C 1590.2 137.9 1671.2 125.0 1713.6 122.7 C 1756.1 120.5 1772.7 126.5 1804.5 131.8 C 1836.4 137.1 1870.5 140.9 1904.5 154.6 C 1938.6 168.2 1985.6 197.7 2009.1 213.6 C 2032.6 229.5 2033.3 234.1 2045.5 250.0 C 2057.6 265.9 2075.0 287.9 2081.8 309.1 C 2088.6 330.3 2089.4 344.7 2086.4 377.3 C 2083.3 409.8 2080.3 462.9 2063.6 504.6 C 2047.0 546.2 2026.5 581.1 1986.4 627.3 C 1946.2 673.5 1903.0 715.9 1822.7 781.8 C 1742.4 847.7 1584.9 956.1 1504.5 1022.7 C 1424.2 1089.4 1390.2 1126.5 1340.9 1181.8 C 1291.7 1237.1 1243.2 1303.0 1209.1 1354.5 C 1175.0 1406.1 1157.6 1437.1 1136.4 1490.9 C 1115.1 1544.7 1086.4 1609.1 1081.8 1677.3 C 1077.3 1745.5 1100.8 1846.2 1109.1 1900.0 C 1117.4 1953.8 1122.7 1971.2 1131.8 2000.0 C 1140.9 2028.8 1148.5 2048.5 1163.6 2072.7 C 1178.8 2097.0 1203.8 2127.3 1222.7 2145.4 C 1241.7 2163.6 1250.8 2168.9 1277.3 2181.8 C 1303.8 2194.7 1324.2 2207.6 1381.8 2222.7 C 1439.4 2237.9 1566.7 2265.9 1622.7 2272.7 C 1678.8 2279.5 1677.3 2273.5 1718.2 2263.6 C 1759.1 2253.8 1815.2 2237.1 1868.2 2213.6 C 1921.2 2190.2 1971.2 2163.6 2036.4 2122.7 C 2101.5 2081.8 2215.9 2000.8 2259.1 1968.2 C 2302.3 1935.6 2262.1 1956.8 2295.4 1927.3 C 2328.8 1897.7 2383.3 1850.8 2459.1 1790.9 C 2534.8 1731.1 2670.5 1622.7 2750.0 1568.2 C 2829.5 1513.6 2887.1 1487.9 2936.4 1463.6 C 2985.6 1439.4 3011.4 1433.3 3045.4 1422.7 C 3079.5 1412.1 3090.2 1408.3 3140.9 1400.0 C 3191.7 1391.7 3301.5 1377.3 3350.0 1372.7 C 3398.5 1368.2 3399.2 1370.5 3431.8 1372.7 C 3464.4 1375.0 3509.1 1379.5 3545.4 1386.4 C 3581.8 1393.2 3610.6 1399.2 3650.0 1413.6 C 3689.4 1428.0 3742.4 1450.8 3781.8 1472.7 C 3821.2 1494.7 3856.8 1521.2 3886.4 1545.5 C 3915.9 1569.7 3934.1 1587.9 3959.1 1618.2 C 3984.1 1648.5 4015.1 1691.7 4036.4 1727.3 C 4057.6 1762.9 4075.0 1804.5 4086.4 1831.8 C 4097.7 1859.1 4100.0 1868.2 4104.6 1890.9 C 4109.1 1913.6 4112.9 1934.1 4113.6 1968.2 C 4114.4 2002.3 4115.2 2037.9 4109.1 2095.4 C 4103.0 2153.0 4084.8 2268.9 4077.3 2313.6 C 4069.7 2358.3 4072.7 2341.7 4063.6 2363.6 C 4054.5 2385.6 4040.9 2416.7 4022.7 2445.4 C 4004.5 2474.2 3984.1 2503.0 3954.6 2536.4 C 3925.0 2569.7 3882.6 2612.9 3845.4 2645.4 C 3808.3 2678.0 3762.9 2710.6 3731.8 2731.8 C 3700.8 2753.0 3692.4 2756.1 3659.1 2772.7 C 3625.8 2789.4 3578.0 2813.6 3531.8 2831.8 C 3485.6 2850.0 3464.4 2862.1 3381.8 2881.8 C 3299.2 2901.5 3174.2 2929.5 3036.4 2950.0 C 2898.5 2970.5 2662.1 2987.9 2554.6 3004.6 C 2447.0 3021.2 2436.4 3033.3 2390.9 3050.0 C 2345.5 3066.7 2313.6 3081.1 2281.8 3104.6 C 2250.0 3128.0 2215.9 3168.2 2200.0 3190.9 C 2184.1 3213.6 2185.6 3209.1 2186.4 3240.9 C 2187.1 3272.7 2197.7 3351.5 2204.6 3381.8 C 2211.4 3412.1 2212.9 3406.1 2227.3 3422.7 C 2241.7 3439.4 2256.8 3462.9 2290.9 3481.8 C 2325.0 3500.8 2392.4 3524.2 2431.8 3536.4 C 2471.2 3548.5 2493.2 3550.8 2527.3 3554.6 C 2561.4 3558.3 2556.8 3569.7 2636.4 3559.1 C 2715.9 3548.5 2890.9 3507.6 3004.6 3490.9 C 3118.2 3474.2 3240.9 3459.1 3318.2 3459.1 C 3395.5 3459.1 3423.5 3477.3 3468.2 3490.9 C 3512.9 3504.5 3550.0 3520.5 3586.4 3540.9 C 3622.7 3561.4 3658.3 3589.4 3686.4 3613.6 C 3714.4 3637.9 3735.6 3662.1 3754.6 3686.4 C 3773.5 3710.6 3787.9 3734.8 3800.0 3759.1 C 3812.1 3783.3 3822.0 3806.8 3827.3 3831.8 C 3832.6 3856.8 3839.4 3854.5 3831.8 3909.1 C 3824.2 3963.6 3800.0 4097.0 3781.8 4159.1 C 3763.6 4221.2 3741.7 4250.8 3722.7 4281.8 C 3703.8 4312.9 3700.8 4319.7 3668.2 4345.4 C 3635.6 4371.2 3572.0 4413.6 3527.3 4436.4 C 3482.6 4459.1 3443.9 4468.9 3400.0 4481.8 C 3356.1 4494.7 3340.9 4503.0 3263.6 4513.6 C 3186.4 4524.2 3025.0 4540.1 2936.4 4545.4 C 2847.7 4550.8 2806.1 4550.0 2731.8 4545.4 C 2657.6 4540.9 2597.7 4534.8 2490.9 4518.2 C 2384.1 4501.5 2199.2 4467.4 2090.9 4445.4 C 1982.6 4423.5 1902.3 4397.7 1840.9 4386.4 C 1779.5 4375.0 1746.2 4379.5 1722.7 4377.3 C 1699.2 4375.0 1706.1 4381.8 1700.0 4372.7 C 1693.9 4363.6 1717.4 4334.1 1686.4 4322.7 C 1655.3 4311.4 1572.0 4318.2 1513.6 4304.6 C 1455.3 4290.9 1400.0 4268.2 1336.4 4240.9 C 1272.7 4213.6 1179.5 4165.9 1131.8 4140.9 C 1084.1 4115.9 1093.2 4122.0 1050.0 4090.9 C 1006.8 4059.8 918.2 3993.9 872.7 3954.6 C 827.3 3915.2 801.5 3882.6 777.3 3854.6 C 753.0 3826.5 747.7 3824.2 727.3 3786.4 C 706.8 3748.5 667.4 3672.7 654.5 3627.3 C 641.7 3581.8 647.0 3565.2 650.0 3513.6 C 653.0 3462.1 661.4 3368.2 672.7 3318.2 C 684.1 3268.2 703.0 3239.4 718.2 3213.6 C 733.3 3187.9 741.7 3180.3 763.6 3163.6 C 785.6 3147.0 802.3 3130.3 850.0 3113.6 C 897.7 3097.0 1006.1 3072.7 1050.0 3063.6 C 1093.9 3054.5 1087.9 3055.3 1113.6 3059.1 C 1139.4 3062.9 1175.8 3075.0 1204.5 3086.4 C 1233.3 3097.7 1253.8 3106.8 1286.4 3127.3 C 1318.9 3147.7 1366.7 3180.3 1400.0 3209.1 C 1433.3 3237.9 1459.1 3266.7 1486.4 3300.0 C 1513.6 3333.3 1538.6 3366.7 1563.6 3409.1 C 1588.6 3451.5 1618.2 3512.9 1636.4 3554.6 C 1654.5 3596.2 1659.1 3602.3 1672.7 3659.1 C 1686.4 3715.9 1712.9 3787.9 1718.2 3895.4 C 1723.5 4003.0 1709.9 4233.3 1704.5 4304.6 C 1699.2 4375.8 1687.9 4310.6 1686.4 4322.7 C 1684.8 4334.8 1699.2 4362.1 1695.5 4377.3 C 1691.7 4392.4 1671.2 4390.9 1663.6 4413.6 C 1656.1 4436.4 1655.3 4487.1 1650.0 4513.6 C 1644.7 4540.2 1637.9 4557.6 1631.8 4572.7 C 1625.8 4587.9 1618.9 4590.2 1613.6 4604.6 C 1608.3 4618.9 1615.2 4624.2 1600.0 4659.1 C 1584.8 4693.9 1560.6 4755.3 1522.7 4813.6 C 1484.9 4872.0 1409.9 4965.9 1372.7 5009.1 C 1335.6 5052.3 1328.8 5050.8 1300.0 5072.7 C 1271.2 5094.7 1238.6 5119.7 1200.0 5140.9 C 1161.4 5162.1 1130.3 5183.3 1068.2 5200.0 C 1006.1 5216.7 888.6 5235.6 827.3 5240.9 C 765.9 5246.2 749.2 5243.2 700.0 5231.8 C 650.8 5220.5 586.4 5199.2 531.8 5172.7 C 477.3 5146.2 424.2 5112.9 372.7 5072.7 C 321.2 5032.6 257.6 4967.4 222.7 4931.8 C 187.9 4896.2 198.5 4874.2 163.6 4859.1 C 128.8 4843.9 38.6 4843.9 13.6 4840.9"
+                            />
+                        </mask>
+                    </defs>
+                    <path
+                        id="ribbon-track"
+                        d="M2880.88 3136.41C3419.96 3095.14 3844.5 2992.93 4092.03 2467.63C4294.92 2037.09 4329.87 1540.92 3864.38 1275.66C3526.67 1083.24 3108.21 1148 2780.06 1325.45C2388.94 1536.92 2100 1938.46 1678.75 2089.91C1523.48 2145.73 1209.44 2187.72 1186.35 1957.53C1158.69 1681.97 1314.44 1398.56 1500.01 1206.24C1622.02 1079.81 1771.59 979.575 1894.42 854.019C2129.47 613.73 2356.15 146.799 1882.42 20.5923C1728.02 -20.5516 1560.76 0.645235 1421.45 78.0338C1408.38 85.3077 1364.44 110.279 1361.1 122.252L1400.19 303.525C1404.76 307.5 1452.17 281.329 1462.83 277.604C1611.27 225.612 1843.87 221.313 1971.01 326.247C2149.47 473.525 1864.38 637.251 1756.49 710.04C1651.52 780.88 1543.5 845.095 1443.51 923.659C1107.66 1187.59 817.241 1576.34 1062.74 2008.22C1179.19 2213.12 1305.37 2393.97 1558.35 2429.36C2372.58 2543.29 2798.1 1304.25 3603.3 1621.56C3845.68 1717.07 4046.93 1990.73 4025.1 2256.29C4009.55 2445.38 3728.9 2597.94 3570.16 2659.05C3369.87 2736.19 3170.8 2767.54 2958.9 2793.18C2745.03 2819.08 2439.84 2820.03 2264.94 2953.66C2073.42 3100.04 2072.03 3336.08 2214.62 3518.9C2466.04 3841.33 2845.56 3623.96 3176.9 3634.21C3461.45 3642.98 3741.29 3805.91 3697.07 4124.86C3685.28 4209.72 3653.78 4285.76 3583.58 4337.83C3326.45 4528.55 2771.71 4473.06 2468.2 4425.14C2242.68 4389.57 2020.7 4332.8 1800.41 4274.86L1795.78 4256.87C1901.08 3845.55 1822.49 3303.41 1465.94 3032.67C1187.11 2820.95 804.025 2855.75 659.682 3198.72C615.261 3304.31 552.072 3516.05 553.78 3627.83C556.669 3819.11 676.038 3981.68 820.231 4095.89C1043.62 4272.84 1325.87 4375.7 1601.69 4440.89C1607.22 4442.44 1608.75 4444.36 1608.53 4450.16C1607.42 4481.28 1586.72 4553.85 1577.32 4586.79C1455.69 5013.6 1024.5 5284.49 599.357 5066.85C435.316 4982.88 294.415 4842.85 189.92 4693.4L0 4840.31C145.172 5051.87 353.484 5264.79 611.04 5331.13C1085.02 5453.21 1446.9 5086.37 1636.04 4699.43C1672.32 4625.19 1698.93 4545.2 1735.13 4471.98L2395.42 4592.47C2895.23 4698.18 3809.23 4625.34 3968.29 4028.07C4093.67 3557.29 3658.88 3232.69 3217.63 3272.29C2969.65 3294.51 2600.46 3494.48 2370.12 3427.36C2307.63 3409.17 2230.77 3359.37 2266.58 3285.63C2337.78 3138.98 2738.78 3147.31 2880.86 3136.41H2880.88ZM834.954 3682.83C748.072 3552.85 642.672 3292.58 851.763 3222.32C1013.64 3167.9 1191.03 3264.86 1304.64 3374C1530.36 3590.86 1611.57 3913.44 1613.9 4218.07C1327.76 4116.09 1006.86 3940.04 834.954 3682.83Z"
+                        fill-rule="evenodd"
+                    />
+                    <!-- pen sits under the fills; base excludes the crossing band; weave draws pass B over it -->
+                    <circle
+                        id="penGlow"
+                        r="70"
+                        fill="#C99440"
+                        filter="url(#glow)"
+                    />
+                    <circle id="penDot" r="22" fill="#E7B968" />
+                    <path
+                        id="ribbon-fill"
+                        d="M2880.88 3136.41C3419.96 3095.14 3844.5 2992.93 4092.03 2467.63C4294.92 2037.09 4329.87 1540.92 3864.38 1275.66C3526.67 1083.24 3108.21 1148 2780.06 1325.45C2388.94 1536.92 2100 1938.46 1678.75 2089.91C1523.48 2145.73 1209.44 2187.72 1186.35 1957.53C1158.69 1681.97 1314.44 1398.56 1500.01 1206.24C1622.02 1079.81 1771.59 979.575 1894.42 854.019C2129.47 613.73 2356.15 146.799 1882.42 20.5923C1728.02 -20.5516 1560.76 0.645235 1421.45 78.0338C1408.38 85.3077 1364.44 110.279 1361.1 122.252L1400.19 303.525C1404.76 307.5 1452.17 281.329 1462.83 277.604C1611.27 225.612 1843.87 221.313 1971.01 326.247C2149.47 473.525 1864.38 637.251 1756.49 710.04C1651.52 780.88 1543.5 845.095 1443.51 923.659C1107.66 1187.59 817.241 1576.34 1062.74 2008.22C1179.19 2213.12 1305.37 2393.97 1558.35 2429.36C2372.58 2543.29 2798.1 1304.25 3603.3 1621.56C3845.68 1717.07 4046.93 1990.73 4025.1 2256.29C4009.55 2445.38 3728.9 2597.94 3570.16 2659.05C3369.87 2736.19 3170.8 2767.54 2958.9 2793.18C2745.03 2819.08 2439.84 2820.03 2264.94 2953.66C2073.42 3100.04 2072.03 3336.08 2214.62 3518.9C2466.04 3841.33 2845.56 3623.96 3176.9 3634.21C3461.45 3642.98 3741.29 3805.91 3697.07 4124.86C3685.28 4209.72 3653.78 4285.76 3583.58 4337.83C3326.45 4528.55 2771.71 4473.06 2468.2 4425.14C2242.68 4389.57 2020.7 4332.8 1800.41 4274.86L1795.78 4256.87C1901.08 3845.55 1822.49 3303.41 1465.94 3032.67C1187.11 2820.95 804.025 2855.75 659.682 3198.72C615.261 3304.31 552.072 3516.05 553.78 3627.83C556.669 3819.11 676.038 3981.68 820.231 4095.89C1043.62 4272.84 1325.87 4375.7 1601.69 4440.89C1607.22 4442.44 1608.75 4444.36 1608.53 4450.16C1607.42 4481.28 1586.72 4553.85 1577.32 4586.79C1455.69 5013.6 1024.5 5284.49 599.357 5066.85C435.316 4982.88 294.415 4842.85 189.92 4693.4L0 4840.31C145.172 5051.87 353.484 5264.79 611.04 5331.13C1085.02 5453.21 1446.9 5086.37 1636.04 4699.43C1672.32 4625.19 1698.93 4545.2 1735.13 4471.98L2395.42 4592.47C2895.23 4698.18 3809.23 4625.34 3968.29 4028.07C4093.67 3557.29 3658.88 3232.69 3217.63 3272.29C2969.65 3294.51 2600.46 3494.48 2370.12 3427.36C2307.63 3409.17 2230.77 3359.37 2266.58 3285.63C2337.78 3138.98 2738.78 3147.31 2880.86 3136.41H2880.88ZM834.954 3682.83C748.072 3552.85 642.672 3292.58 851.763 3222.32C1013.64 3167.9 1191.03 3264.86 1304.64 3374C1530.36 3590.86 1611.57 3913.44 1613.9 4218.07C1327.76 4116.09 1006.86 3940.04 834.954 3682.83Z"
+                        fill="url(#satin)"
+                        fill-rule="evenodd"
+                        mask="url(#reveal)"
+                    />
+                </svg>
+            </div>
+
+            <div class="beats">
+                <article
+                    class="beat beat-stakes"
+                    style="top: 12%"
+                    data-p="0.12"
+                >
+                    <div class="wrap">
+                        <div class="copy">
+                            <div class="eyebrow r">01 – The stakes</div>
+                            <h2 class="r">
+                                A gift is never <em>just</em> a gift.
+                            </h2>
+                            <p class="lead r">
+                                With your company's name on it, it's a
+                                handshake, a thank-you and a first impression
+                                all at once. Done well, it earns its place – on
+                                the desk, and in the memory – for years.
+                            </p>
+                        </div>
+                        <div class="burst">
+                            <div
+                                class="chip tag pos"
+                                style="--tx: -150px; --ty: -176px; --rot: -7deg"
+                            >
+                                <span class="ct">Remembered</span>
+                            </div>
+                            <div
+                                class="chip tag pos"
+                                style="--tx: 30px; --ty: -200px; --rot: 5deg"
+                            >
+                                <span class="ct">Talked about</span>
+                            </div>
+                            <div
+                                class="chip tag pos"
+                                style="--tx: 196px; --ty: -158px; --rot: -3deg"
+                            >
+                                <span class="ct">On-brand</span>
+                            </div>
+                            <!-- a little gallery of the ways a gift wins -->
+                            <div
+                                class="chip photo"
+                                style="--tx: -132px; --ty: 32px; --rot: -6deg"
+                            >
+                                <div class="media-wrap" data-label="Keepsake">
+                                    <img
+                                        class="chip-media"
+                                        src="assets/beat01-keepsake.jpg"
+                                        alt="A bespoke keepsake gift kept on the desk"
+                                        loading="lazy"
+                                        onerror="this.classList.add('missing')"
+                                    />
+                                </div>
+                                <div class="chip-cap">
+                                    <span class="ct">The keepsake</span
+                                    ><span class="cs"
+                                        >Kept on the desk for years.</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="chip photo win"
+                                style="--tx: 40px; --ty: 98px; --rot: 4deg"
+                            >
+                                <div
+                                    class="media-wrap"
+                                    data-label="Unforgettable"
+                                >
+                                    <img
+                                        class="chip-media"
+                                        src="assets/beat01-unforgettable.jpg"
+                                        alt="A bespoke Bespoke-ly gift – the version people screenshot and show their team"
+                                        loading="lazy"
+                                        onerror="this.classList.add('missing')"
+                                    />
+                                </div>
+                                <div class="chip-cap">
+                                    <span class="ct">Unforgettable</span
+                                    ><span class="cs"
+                                        >The version people screenshot.</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="chip photo"
+                                style="--tx: 206px; --ty: 22px; --rot: 8deg"
+                            >
+                                <div
+                                    class="media-wrap"
+                                    data-label="First impression"
+                                >
+                                    <img
+                                        class="chip-media"
+                                        src="assets/beat01-reveal.webp"
+                                        alt="A bespoke gift that makes a first impression"
+                                        loading="lazy"
+                                        onerror="this.classList.add('missing')"
+                                    />
+                                </div>
+                                <div class="chip-cap">
+                                    <span class="ct">First impression</span
+                                    ><span class="cs"
+                                        >Says everything before you do.</span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article
+                    class="beat flip"
+                    style="top: 36%"
+                    data-p="0.36"
+                    id="guide"
+                >
+                    <div class="wrap">
+                        <div class="copy">
+                            <div class="eyebrow r">02 – Your guide</div>
+                            <h2 class="r">
+                                You bring the moment. <em>We</em> bring
+                                everything else.
+                            </h2>
+                            <p class="lead r">
+                                Bespoke-ly is a design-and-production studio
+                                built around three things we're slightly
+                                obsessed with – so you never have to juggle
+                                agencies, makers and couriers again.
+                            </p>
+                        </div>
+                        <div class="burst">
+                            <div
+                                class="chip photo"
+                                style="--tx: -138px; --ty: -92px; --rot: -6deg"
+                            >
+                                <div class="media-wrap" data-label="Creative">
+                                    <img
+                                        class="chip-media"
+                                        src="assets/beat02-creative.jpg"
+                                        alt="Creative concepting and sketching at the Bespoke-ly studio"
+                                        loading="lazy"
+                                        onerror="this.classList.add('missing')"
+                                    />
+                                </div>
+                                <div class="chip-cap">
+                                    <span class="ct">Creative Thinkers</span
+                                    ><span class="cs"
+                                        >Original, out-of-the-box concepts
+                                        tailored to your brand.</span
+                                    ><span class="chip-detail"
+                                        >Concepts, naming &amp; art direction —
+                                        your brief, reimagined.</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="chip photo"
+                                style="--tx: 138px; --ty: -12px; --rot: 5deg"
+                            >
+                                <div class="media-wrap" data-label="Production">
+                                    <img
+                                        class="chip-media"
+                                        src="assets/beat02-product.jpg"
+                                        alt="Real products being made in the UK and NL studios"
+                                        loading="lazy"
+                                        onerror="this.classList.add('missing')"
+                                    />
+                                </div>
+                                <div class="chip-cap">
+                                    <span class="ct">Product Makers</span
+                                    ><span class="cs"
+                                        >Real products, made in our UK &amp; NL
+                                        studios.</span
+                                    ><span class="chip-detail"
+                                        >Prototyped, sampled &amp; produced
+                                        in-house.</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="chip photo"
+                                style="--tx: -30px; --ty: 120px; --rot: -3deg"
+                            >
+                                <div class="media-wrap" data-label="Fulfilment">
+                                    <img
+                                        class="chip-media"
+                                        src="assets/beat02-fulfilment.jpg"
+                                        alt="Gifts hand-packed and shipped pristine, worldwide"
+                                        loading="lazy"
+                                        onerror="this.classList.add('missing')"
+                                    />
+                                </div>
+                                <div class="chip-cap">
+                                    <span class="ct">Fulfilment Experts</span
+                                    ><span class="cs"
+                                        >Hand-packed and shipped, pristine,
+                                        worldwide.</span
+                                    ><span class="chip-detail"
+                                        >Kitting, warehousing &amp; global
+                                        dispatch, handled.</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="chip tag pos"
+                                style="--tx: 64px; --ty: -150px; --rot: 4deg"
+                            >
+                                <span class="ct">One partner, not five</span>
+                            </div>
+                            <div
+                                class="chip tag pos"
+                                style="--tx: 150px; --ty: 116px; --rot: -4deg"
+                            >
+                                <span class="ct">Brief to doorstep</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article
+                    class="beat beat-proof"
+                    style="top: 58%"
+                    data-p="0.58"
+                    id="proof"
+                >
+                    <div class="wrap">
+                        <div class="copy">
+                            <div class="eyebrow r">03 – Proof</div>
+                            <h2 class="r">
+                                The most demanding brands already trust us with
+                                their name.
+                            </h2>
+                            <p class="lead r">
+                                From streaming giants to global banks, we've
+                                made the gifts that land in the right hands –
+                                and stay on the right desks.
+                            </p>
+                        </div>
+                        <div class="burst proof-burst">
+                            <div class="logo-grid">
+                                <div class="chip logo">
+                                    <img
+                                        class="logo-mark"
+                                        src="assets/logo-netflix.svg"
+                                        alt="Netflix"
+                                        onload="
+                                            if (this.naturalWidth) {
+                                                var w = this.nextElementSibling;
+                                                if (w) w.style.display = 'none';
+                                            }
+                                        "
+                                        onerror="this.style.display = 'none'"
+                                    /><span class="wordmark">NETFLIX</span>
+                                </div>
+
+                                <div class="chip logo">
+                                    <img
+                                        class="logo-mark"
+                                        src="assets/logo-nike.svg"
+                                        alt="Nike"
+                                        onload="
+                                            if (this.naturalWidth) {
+                                                var w = this.nextElementSibling;
+                                                if (w) w.style.display = 'none';
+                                            }
+                                        "
+                                        onerror="this.style.display = 'none'"
+                                    /><span class="wordmark">NIKE</span>
+                                </div>
+                                <div class="chip logo">
+                                    <img
+                                        class="logo-mark"
+                                        src="assets/logo-openai.svg"
+                                        alt="OpenAI"
+                                        onload="
+                                            if (this.naturalWidth) {
+                                                var w = this.nextElementSibling;
+                                                if (w) w.style.display = 'none';
+                                            }
+                                        "
+                                        onerror="this.style.display = 'none'"
+                                    /><span class="wordmark">OPENAI</span>
+                                </div>
+                                <div class="chip logo">
+                                    <img
+                                        class="logo-mark"
+                                        src="assets/logo-spotify.svg"
+                                        alt=""
+                                        onload="
+                                            if (this.naturalWidth) {
+                                                var w = this.nextElementSibling;
+                                                if (w) w.style.display = 'none';
+                                            }
+                                        "
+                                        onerror="this.style.display = 'none'"
+                                    /><span class="wordmark">SPOTIFY</span>
+                                </div>
+                                <div class="chip logo">
+                                    <img
+                                        class="logo-mark"
+                                        src="assets/logo-google.svg"
+                                        alt=""
+                                        onload="
+                                            if (this.naturalWidth) {
+                                                var w = this.nextElementSibling;
+                                                if (w) w.style.display = 'none';
+                                            }
+                                        "
+                                        onerror="this.style.display = 'none'"
+                                    /><span class="wordmark">GOOGLE</span>
+                                </div>
+                                <div class="chip logo">
+                                    <img
+                                        class="logo-mark"
+                                        src="assets/logo-uber.svg"
+                                        alt=""
+                                        onload="
+                                            if (this.naturalWidth) {
+                                                var w = this.nextElementSibling;
+                                                if (w) w.style.display = 'none';
+                                            }
+                                        "
+                                        onerror="this.style.display = 'none'"
+                                    /><span class="wordmark">UBER</span>
+                                </div>
+                                <div class="chip logo">
+                                    <img
+                                        class="logo-mark"
+                                        src="assets/logo-hsbc.svg"
+                                        alt="HSBC"
+                                        onload="
+                                            if (this.naturalWidth) {
+                                                var w = this.nextElementSibling;
+                                                if (w) w.style.display = 'none';
+                                            }
+                                        "
+                                        onerror="this.style.display = 'none'"
+                                    /><span class="wordmark">HSBC</span>
+                                </div>
+                                <div class="chip logo">
+                                    <img
+                                        class="logo-mark"
+                                        src="assets/logo-007.svg"
+                                        alt=""
+                                        onload="
+                                            if (this.naturalWidth) {
+                                                var w = this.nextElementSibling;
+                                                if (w) w.style.display = 'none';
+                                            }
+                                        "
+                                        onerror="this.style.display = 'none'"
+                                    /><span class="wordmark">007</span>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="chip lg">
+                                    <span class="stat"
+                                        ><span
+                                            class="n"
+                                            data-count="150"
+                                            data-suffix="+"
+                                            >0</span
+                                        ><span class="l"
+                                            >Collaborations</span
+                                        ></span
+                                    >
+                                </div>
+                                <div class="chip lg">
+                                    <span class="stat"
+                                        ><span
+                                            class="n"
+                                            data-count="12"
+                                            data-suffix=" yrs"
+                                            >0</span
+                                        ><span class="l"
+                                            >making, refining</span
+                                        ></span
+                                    >
+                                </div>
+                                <div class="chip lg">
+                                    <span class="stat"
+                                        ><span
+                                            class="n"
+                                            data-count="94"
+                                            data-suffix="%"
+                                            >0</span
+                                        ><span class="l"
+                                            >come back for more</span
+                                        ></span
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article
+                    class="beat flip beat-transform"
+                    style="top: 80%"
+                    data-p="0.80"
+                >
+                    <div class="wrap">
+                        <div class="copy">
+                            <div class="eyebrow r">04 – The transformation</div>
+                            <h2 class="r">
+                                Become the gifting <em>hero</em> of your
+                                business.
+                            </h2>
+                            <p class="lead r">
+                                Walk into the room knowing every box is
+                                on-brand, on-time and unforgettable. The work is
+                                all ours. The credit is all yours.
+                            </p>
+                        </div>
+                        <div class="burst">
+                            <div
+                                class="chip photo"
+                                style="--tx: -134px; --ty: -90px; --rot: -7deg"
+                            >
+                                <div
+                                    class="media-wrap"
+                                    data-label="Event gifts"
+                                >
+                                    <img
+                                        class="chip-media"
+                                        src="assets/beat04-event-gifts.webp"
+                                        alt="Bespoke event gifts"
+                                        loading="lazy"
+                                        onerror="this.classList.add('missing')"
+                                    />
+                                </div>
+                                <div class="chip-cap">
+                                    <span class="ct">Event gifts</span
+                                    ><span class="chip-detail"
+                                        >Launches, summits &amp; on-stage
+                                        moments — gifted to land.</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="chip photo"
+                                style="--tx: 140px; --ty: -22px; --rot: 6deg"
+                            >
+                                <div
+                                    class="media-wrap"
+                                    data-label="Merchandise"
+                                >
+                                    <img
+                                        class="chip-media"
+                                        src="assets/beat04-merchandise.jpg"
+                                        alt="Branded merchandise"
+                                        loading="lazy"
+                                        onerror="this.classList.add('missing')"
+                                    />
+                                </div>
+                                <div class="chip-cap">
+                                    <span class="ct">Merchandise</span
+                                    ><span class="chip-detail"
+                                        >Apparel, drinkware &amp; desk pieces
+                                        people actually keep.</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="chip photo"
+                                style="--tx: -46px; --ty: 132px; --rot: -3deg"
+                            >
+                                <div
+                                    class="media-wrap"
+                                    data-label="VIP gifting"
+                                >
+                                    <img
+                                        class="chip-media"
+                                        src="assets/beat04-vip-gifting.webp"
+                                        alt="VIP gifting"
+                                        loading="lazy"
+                                        onerror="this.classList.add('missing')"
+                                    />
+                                </div>
+                                <div class="chip-cap">
+                                    <span class="ct">VIP gifting</span
+                                    ><span class="chip-detail"
+                                        >High-touch, individually considered
+                                        gifts for the people who matter
+                                        most.</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                class="chip tag pos"
+                                style="--tx: 8px; --ty: -176px; --rot: 4deg"
+                            >
+                                <span class="ct">On-brand</span>
+                            </div>
+                            <div
+                                class="chip tag pos"
+                                style="--tx: -176px; --ty: 44px; --rot: -5deg"
+                            >
+                                <span class="ct">On-time, every time</span>
+                            </div>
+                            <div
+                                class="chip tag pos"
+                                style="--tx: 200px; --ty: 70px; --rot: 6deg"
+                            >
+                                <span class="ct">Pristine unboxing</span>
+                            </div>
+                            <div
+                                class="chip tag pos"
+                                style="--tx: 96px; --ty: 154px; --rot: 4deg"
+                            >
+                                <span class="ct">All the credit, yours</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article
+                    class="beat cta-beat"
+                    style="top: 94%"
+                    data-p="0.96"
+                    id="start"
+                >
+                    <div class="wrap">
+                        <div class="copy">
+                            <div
+                                class="eyebrow r"
+                                style="justify-content: center"
+                            >
+                                05 – Start
+                            </div>
+                            <h2 class="r">
+                                Let's make an unforgettable impression.
+                            </h2>
+                            <p class="lead r">
+                                Tell us the occasion. We'll bring the ideas, the
+                                products and the logistics – and make you look
+                                brilliant doing it.
+                            </p>
+                            <div
+                                class="b-cta r"
+                                style="justify-content: center"
+                            >
+                                <a class="btn btn-primary" href="#start"
+                                    >Start your project
+                                    <span class="arr">&rarr;</span></a
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- "Explore our work" – an autoplaying marquee of project types (show, don't tell). Cards cloned in JS for a seamless loop. -->
+        <section class="worktrack" aria-label="Explore our work">
+            <div class="worktrack-head wrap">
+                <span class="eyebrow">Explore our work</span>
+                <span class="worktrack-hint"
+                    >A few of the things we make ↘</span
+                >
+            </div>
+            <div class="marquee" id="marquee">
+                <div class="marquee-row">
+                    <a class="work-card" href="#story">
+                        <div class="media-wrap" data-label="Event gifts">
+                            <img
+                                class="chip-media"
+                                src="assets/work-influencer-gifting.webp"
+                                alt="Event gifts"
+                                loading="lazy"
+                                onerror="this.classList.add('missing')"
+                            />
+                        </div>
+                        <span class="work-title">Influencer Gifting</span>
+                    </a>
+                    <a class="work-card" href="#story">
+                        <div class="media-wrap" data-label="Merchandise">
+                            <img
+                                class="chip-media"
+                                src="assets/work-onboarding-gifts.jpg"
+                                alt="Branded merchandise"
+                                loading="lazy"
+                                onerror="this.classList.add('missing')"
+                            />
+                        </div>
+                        <span class="work-title">On-boarding Gifts</span>
+                    </a>
+                    <a class="work-card" href="#story">
+                        <div class="media-wrap" data-label="VIP gifting">
+                            <img
+                                class="chip-media"
+                                src="assets/work-event-gifting.webp"
+                                alt="VIP gifting"
+                                loading="lazy"
+                                onerror="this.classList.add('missing')"
+                            />
+                        </div>
+                        <span class="work-title">Event Gifting</span>
+                    </a>
+                    <a class="work-card" href="#story">
+                        <div class="media-wrap" data-label="Awards">
+                            <img
+                                class="chip-media"
+                                src="assets/work-awards.webp"
+                                alt="Custom drinkware"
+                                loading="lazy"
+                                onerror="this.classList.add('missing')"
+                            />
+                        </div>
+                        <span class="work-title">Awards</span>
+                    </a>
+                    <a class="work-card" href="#story">
+                        <div class="media-wrap" data-label="Apparel">
+                            <img
+                                class="chip-media"
+                                src="assets/work-creative-concepts.jpg"
+                                alt="Branded apparel"
+                                loading="lazy"
+                                onerror="this.classList.add('missing')"
+                            />
+                        </div>
+                        <span class="work-title">Creative Concepts</span>
+                    </a>
+                    <a class="work-card" href="#story">
+                        <div class="media-wrap" data-label="Keepsakes">
+                            <img
+                                class="chip-media"
+                                src="assets/work-hampers.webp"
+                                alt="Bespoke keepsakes"
+                                loading="lazy"
+                                onerror="this.classList.add('missing')"
+                            />
+                        </div>
+                        <span class="work-title">Hampers</span>
+                    </a>
+                    <a class="work-card" href="#story">
+                        <div class="media-wrap" data-label="Stationery">
+                            <img
+                                class="chip-media"
+                                src="assets/work-brand-collaborations.webp"
+                                alt="Bespoke stationery"
+                                loading="lazy"
+                                onerror="this.classList.add('missing')"
+                            />
+                        </div>
+                        <span class="work-title">Brand Collaborations</span>
+                    </a>
+                    <a class="work-card" href="#story">
+                        <div class="media-wrap" data-label="Tech gifts">
+                            <img
+                                class="chip-media"
+                                src="assets/work-sustainability.webp"
+                                alt="Branded tech gifts"
+                                loading="lazy"
+                                onerror="this.classList.add('missing')"
+                            />
+                        </div>
+                        <span class="work-title">Sustainability</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="foot">
+            <div class="wrap">
+                <div><h3>Gifting, designed and made to be remembered.</h3></div>
+                <div class="col">
+                    <h4>Studio</h4>
+                    <a href="#guide">Creative</a><a href="#guide">Production</a
+                    ><a href="#guide">Fulfilment</a><a href="#proof">Clients</a>
+                </div>
+                <div class="col">
+                    <h4>Company</h4>
+                    <a href="#">About</a><a href="#">Sustainability</a
+                    ><a href="#">Careers</a><a href="#start">Contact</a>
+                </div>
+                <div class="base">
+                    <span>London · Amsterdam · New York</span
+                    ><span>© Bespoke-ly – prototype</span>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+        <!-- canvas-confetti: the Beat-05 finale burst (overlay canvas only – never touches scroll). Degrades silently if it fails to load. -->
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+        <script>
+            (function () {
+                var reduce = window.matchMedia(
+                    "(prefers-reduced-motion: reduce)",
+                ).matches;
+                var hdr = document.getElementById("hdr");
+                window.addEventListener(
+                    "scroll",
+                    function () {
+                        hdr.classList.toggle("scrolled", window.scrollY > 40);
+                    },
+                    { passive: true },
+                );
+
+                var stroke = document.getElementById("revealStroke");
+                var penDot = document.getElementById("penDot");
+                var penGlow = document.getElementById("penGlow");
+                var L = stroke.getTotalLength();
+                stroke.style.strokeDasharray = L;
+                stroke.style.strokeDashoffset = L;
+                var penVisible = false; // desktop turns this on so the dot sits at the start on the hero (frame 0)
+
+                // NOTE: the self-crossing draws as a flat union (one fill), so a small fragment of the second pass can show as the
+                // first pass brushes through. Left as-is intentionally – the clean fix is the designer splitting the artwork into
+                // two z-ordered strokes at the crossing. (See HANDOVER #4.)
+
+                function draw(p) {
+                    p = Math.max(0, Math.min(1, p));
+                    stroke.style.strokeDashoffset = L * (1 - p);
+                    // ramp the brush from thin->full over the first sliver so the start eases in from the tip (not an abrupt full-width blob)
+                    stroke.style.strokeWidth =
+                        p < 0.02 ? 150 + (440 - 150) * (p / 0.02) : 440;
+                    var on = penVisible && p > 0.012 && p < 0.996;
+                    if (on) {
+                        var pt = stroke.getPointAtLength(
+                            Math.min(L, L * p + 220),
+                        );
+                        penDot.setAttribute("cx", pt.x);
+                        penDot.setAttribute("cy", pt.y);
+                        penGlow.setAttribute("cx", pt.x);
+                        penGlow.setAttribute("cy", pt.y);
+                        // Through the loop/crossing band (≈0.62–0.92 of the draw) the centreline doubles
+                        // back, so arc-length and vertical travel diverge and the dot visibly "wanders".
+                        // Smoothly dip its presence there so the wander reads as the pen easing under the
+                        // ribbon rather than darting around. (See HANDOVER #2/#3.)
+                        var band = 1;
+                        if (p > 0.62 && p < 0.92) {
+                            var m = (p - 0.62) / 0.3; // 0..1 across the band
+                            band = 0.4 + 0.6 * Math.abs(Math.cos(m * Math.PI));
+                        }
+                        penDot.style.opacity = band;
+                        penGlow.style.opacity = 0.9 * band;
+                    } else {
+                        penDot.style.opacity = 0;
+                        penGlow.style.opacity = 0;
+                    }
+                }
+
+                // stat count-up targets share this filler so reduced/mobile show final figures (not "0")
+                function fillStats() {
+                    document
+                        .querySelectorAll(".stat .n[data-count]")
+                        .forEach(function (n) {
+                            n.textContent =
+                                n.getAttribute("data-count") +
+                                (n.getAttribute("data-suffix") || "");
+                        });
+                }
+
+                if (reduce || !window.gsap) {
+                    document.body.classList.add("reduced");
+                    fillStats();
+                    draw(1);
+                    return;
+                }
+                gsap.registerPlugin(ScrollTrigger);
+
+                /* ===== HERO INTRO: split-line headline rises, product cards settle in (all screens) ===== */
+                var heroWords = gsap.utils.toArray(".beat-hero h1 .word");
+                var heroBits = gsap.utils.toArray(
+                    ".hero-eye, .hero-sub, .hero-cta, .hero-foot",
+                );
+                var heroCardChips = gsap.utils.toArray(".hero-card .chip");
+                gsap.set(heroWords, { yPercent: 118 });
+                gsap.set(heroBits, { opacity: 0, y: 18 });
+                heroCardChips.forEach(function (chip) {
+                    var rot =
+                        chip.parentNode.style.getPropertyValue("--rot") ||
+                        "0deg";
+                    chip._rot = rot;
+                    gsap.set(chip, {
+                        opacity: 0,
+                        scale: 0.86,
+                        y: 34,
+                        rotate: 0,
+                    });
+                });
+                gsap.timeline({ delay: 0.12, defaults: { ease: "power3.out" } })
+                    .to(heroWords, {
+                        yPercent: 0,
+                        duration: 0.9,
+                        stagger: 0.07,
+                    })
+                    .to(
+                        heroBits,
+                        { opacity: 1, y: 0, duration: 0.7, stagger: 0.09 },
+                        0.3,
+                    )
+                    .to(
+                        heroCardChips,
+                        {
+                            opacity: 1,
+                            scale: 1,
+                            y: 0,
+                            rotate: function (i, t) {
+                                return t._rot;
+                            },
+                            duration: 0.85,
+                            stagger: 0.12,
+                            ease: "back.out(1.5)",
+                        },
+                        0.45,
+                    );
+
+                /* ===== "Explore our work" marquee: seamless auto-drift that is also DRAGGABLE.
+                   A single rAF owns the x position; auto-drift, hover-slow, drag and fling momentum all feed
+                   the same `pos`, wrapped over one set's width. Reduced-motion falls back to a scrollable rail. ===== */
+                var mqRow = document.querySelector("#marquee .marquee-row");
+                if (mqRow) {
+                    var mqEl = document.getElementById("marquee");
+                    // clone the set once so we can wrap seamlessly
+                    Array.prototype.slice
+                        .call(mqRow.children)
+                        .forEach(function (node) {
+                            mqRow.appendChild(node.cloneNode(true));
+                        });
+                    var setW = 0;
+                    function mqMeasure() {
+                        // width of the FIRST set (incl. each card's margin) = the seamless wrap distance
+                        var kids = mqRow.children,
+                            n = kids.length / 2;
+                        setW = 0;
+                        for (var i = 0; i < n; i++) {
+                            var st = getComputedStyle(kids[i]);
+                            setW +=
+                                kids[i].offsetWidth +
+                                (parseFloat(st.marginRight) || 0) +
+                                (parseFloat(st.marginLeft) || 0);
+                        }
+                    }
+                    mqMeasure();
+                    window.addEventListener("resize", mqMeasure);
+
+                    var mqPos = 0,
+                        mqAuto = 0.55, // px/frame baseline drift (leftward)
+                        mqCur = mqAuto,
+                        mqDragging = false,
+                        mqLastX = 0,
+                        mqVel = 0,
+                        mqMoved = 0;
+                    function mqWrap(p) {
+                        if (setW > 0) {
+                            while (p <= -setW) p += setW;
+                            while (p > 0) p -= setW;
+                        }
+                        return p;
+                    }
+                    function mqRender() {
+                        mqRow.style.transform =
+                            "translate3d(" + mqPos + "px,0,0)";
+                    }
+                    gsap.ticker.add(function () {
+                        if (mqDragging) return;
+                        if (Math.abs(mqVel) > 0.06) {
+                            mqPos += mqVel; // fling momentum after a drag
+                            mqVel *= 0.92;
+                        } else {
+                            mqPos -= mqCur; // idle drift
+                        }
+                        mqPos = mqWrap(mqPos);
+                        mqRender();
+                    });
+                    // hover slows the drift so people can read
+                    mqEl.addEventListener("mouseenter", function () {
+                        if (!mqDragging) mqCur = mqAuto * 0.15;
+                    });
+                    mqEl.addEventListener("mouseleave", function () {
+                        mqCur = mqAuto;
+                    });
+                    // never let the browser pick up a card image as a native drag
+                    mqEl.addEventListener("dragstart", function (e) {
+                        e.preventDefault();
+                    });
+                    // drag to scrub
+                    mqEl.addEventListener("pointerdown", function (e) {
+                        mqDragging = true;
+                        mqLastX = e.clientX;
+                        mqVel = 0;
+                        mqMoved = 0;
+                        mqEl.classList.add("dragging");
+                        if (mqEl.setPointerCapture)
+                            mqEl.setPointerCapture(e.pointerId);
+                    });
+                    mqEl.addEventListener("pointermove", function (e) {
+                        if (!mqDragging) return;
+                        var dx = e.clientX - mqLastX;
+                        mqLastX = e.clientX;
+                        mqPos += dx;
+                        mqVel = dx;
+                        mqMoved += Math.abs(dx);
+                        mqPos = mqWrap(mqPos);
+                        mqRender();
+                    });
+                    function mqEnd() {
+                        if (!mqDragging) return;
+                        mqDragging = false;
+                        mqEl.classList.remove("dragging");
+                    }
+                    mqEl.addEventListener("pointerup", mqEnd);
+                    mqEl.addEventListener("pointercancel", mqEnd);
+                    // a drag shouldn't trigger the card's link navigation
+                    mqEl.addEventListener(
+                        "click",
+                        function (e) {
+                            if (mqMoved > 6) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                        },
+                        true,
+                    );
+                    mqRender();
+                }
+
+                /* ===== Beat 05 finale: confetti fires when the visitor CLICKS the final "Start your project".
+                   "Rainbow sprinkles" in an earthy, on-brand colourway; overlay canvas only. Works on all sizes. ===== */
+                var ctaBtn = document.querySelector(".cta-beat .btn-primary");
+                if (ctaBtn) {
+                    var confettiCols = [
+                        "#b0863c",
+                        "#E7B968",
+                        "#1C5232",
+                        "#143d26",
+                        "#C97A54",
+                        "#3E8C84",
+                        "#C98AA6",
+                        "#f4f1e8",
+                    ];
+                    var fireConfetti = function () {
+                        if (!window.confetti) return;
+                        confetti({
+                            particleCount: 120,
+                            spread: 95,
+                            startVelocity: 48,
+                            origin: { x: 0.5, y: 0.66 },
+                            colors: confettiCols,
+                            scalar: 0.9,
+                            ticks: 240,
+                        });
+                        var end = Date.now() + 900;
+                        (function frame() {
+                            confetti({
+                                particleCount: 5,
+                                angle: 60,
+                                spread: 55,
+                                origin: { x: 0, y: 0.75 },
+                                colors: confettiCols,
+                                scalar: 0.85,
+                                ticks: 200,
+                            });
+                            confetti({
+                                particleCount: 5,
+                                angle: 120,
+                                spread: 55,
+                                origin: { x: 1, y: 0.75 },
+                                colors: confettiCols,
+                                scalar: 0.85,
+                                ticks: 200,
+                            });
+                            if (Date.now() < end) requestAnimationFrame(frame);
+                        })();
+                    };
+                    ctaBtn.addEventListener("click", function (e) {
+                        e.preventDefault(); // prototype button – celebrate instead of navigating
+                        fireConfetti();
+                        // restart the gold ripple on each click
+                        ctaBtn.classList.remove("pulse");
+                        void ctaBtn.offsetWidth;
+                        ctaBtn.classList.add("pulse");
+                    });
+                }
+
+                var VB = 5355; // ribbon viewBox height – maps SVG-y to the section's pixel height
+                var mm = gsap.matchMedia();
+
+                /* ===== DESKTOP: full scroll choreography ===== */
+                mm.add("(min-width:821px)", function () {
+                    penVisible = true;
+
+                    // Hero cards: cursor + scroll parallax. Wrapper owns the translate so it never fights
+                    // the chip's intro/rotation tween. Depth (data-depth) gives each card its own travel.
+                    var heroCards = gsap.utils.toArray(".hero-card");
+                    var heroEl = document.querySelector(".beat-hero");
+                    var heroMove = null,
+                        heroST = null;
+                    if (heroCards.length && heroEl) {
+                        // per-card character so the cluster drifts organically, not in lockstep:
+                        // different axis weighting, a couple that counter-move, varied rotation & lag.
+                        var heroVary = [
+                            { fx: 1.0, fy: 0.65, rot: 1.4, dur: 0.6 },
+                            { fx: -0.55, fy: 1.15, rot: -1.1, dur: 0.78 },
+                            { fx: 0.7, fy: -0.45, rot: 2.0, dur: 0.5 },
+                        ];
+                        var movers = heroCards.map(function (card, i) {
+                            var v = heroVary[i % heroVary.length];
+                            return {
+                                sx: gsap.quickTo(card, "x", {
+                                    duration: v.dur,
+                                    ease: "power3",
+                                }),
+                                sy: gsap.quickTo(card, "y", {
+                                    duration: v.dur,
+                                    ease: "power3",
+                                }),
+                                sr: gsap.quickTo(card, "rotation", {
+                                    duration: v.dur + 0.25,
+                                    ease: "power3",
+                                }),
+                                d: (parseFloat(card.dataset.depth) || 30) / 30,
+                                v: v,
+                            };
+                        });
+                        var hmx = 0,
+                            hmy = 0,
+                            hscroll = 0;
+                        var applyHero = function () {
+                            movers.forEach(function (m) {
+                                m.sx(hmx * 18 * m.d * m.v.fx);
+                                m.sy(hmy * 18 * m.d * m.v.fy + hscroll * m.d);
+                                m.sr(hmx * m.v.rot);
+                            });
+                        };
+                        heroMove = function (e) {
+                            hmx = (e.clientX / window.innerWidth - 0.5) * 2;
+                            hmy = (e.clientY / window.innerHeight - 0.5) * 2;
+                            applyHero();
+                        };
+                        window.addEventListener("mousemove", heroMove, {
+                            passive: true,
+                        });
+                        heroST = ScrollTrigger.create({
+                            trigger: ".beat-hero",
+                            start: "top top",
+                            end: "bottom top",
+                            onUpdate: function (self) {
+                                hscroll = self.progress * 70;
+                                applyHero();
+                            },
+                        });
+                    }
+
+                    // Lookup table: arc-progress -> pen Y in SVG units (sampled once; path geometry is render-independent)
+                    var N = 600,
+                        ys = new Array(N + 1);
+                    for (var i = 0; i <= N; i++) {
+                        ys[i] = stroke.getPointAtLength((i / N) * L).y;
+                    }
+                    // Invert: first arc-progress (>= pLow, i.e. in painting order) whose pen-Y crosses targetY
+                    function findP(targetY, pLow) {
+                        var start = Math.max(1, Math.ceil(pLow * N));
+                        for (var i = start; i <= N; i++) {
+                            var y0 = ys[i - 1],
+                                y1 = ys[i];
+                            if ((y0 - targetY) * (y1 - targetY) <= 0) {
+                                var t = (targetY - y0) / (y1 - y0 || 1);
+                                return (i - 1 + t) / N;
+                            }
+                        }
+                        var best = pLow,
+                            bd = Infinity; // no forward crossing (path loops away) -> nearest Y from here on
+                        for (var j = start; j <= N; j++) {
+                            var d = Math.abs(ys[j] - targetY);
+                            if (d < bd) {
+                                bd = d;
+                                best = j / N;
+                            }
+                        }
+                        return best;
+                    }
+
+                    // Spatial sync: anchor each beat's scroll-fraction to the draw-progress whose pen sits beside it.
+                    // The B loops vertically, so this is a best-effort monotonic mapping, not a perfect one.
+                    var beatsEls = [].slice.call(
+                        document.querySelectorAll(".beats .beat"),
+                    );
+                    var sec = document.querySelector(".ribbon-scroll");
+                    var cps = [
+                        [0, 0],
+                        [1, 1],
+                    ];
+                    function buildRemap() {
+                        var secTop =
+                            sec.getBoundingClientRect().top +
+                            window.pageYOffset;
+                        var secH = sec.offsetHeight,
+                            vh = window.innerHeight,
+                            range = Math.max(1, secH - vh);
+                        var arr = [[0, 0]],
+                            pPrev = 0;
+                        beatsEls.forEach(function (b) {
+                            var top =
+                                b.getBoundingClientRect().top +
+                                window.pageYOffset -
+                                secTop;
+                            var relCenter = top + b.offsetHeight / 2; // beat centre within the section (px)
+                            var s = Math.max(
+                                0,
+                                Math.min(1, (relCenter - vh / 2) / range),
+                            ); // scroll-fraction when beat is centred
+                            var targetY = (relCenter / secH) * VB; // the SVG-y the pen should be at then
+                            var p = findP(targetY, pPrev);
+                            if (p < pPrev) p = pPrev;
+                            arr.push([s, p]);
+                            pPrev = p;
+                        });
+                        // the ribbon should be fully painted by the last beat (the CTA) so it never looks cut off / unfinished
+                        if (arr.length > 1) arr[arr.length - 1][1] = 1;
+                        arr.push([1, 1]);
+                        arr.sort(function (a, b) {
+                            return a[0] - b[0];
+                        });
+                        for (var i = 1; i < arr.length; i++) {
+                            if (arr[i][1] < arr[i - 1][1])
+                                arr[i][1] = arr[i - 1][1];
+                        } // keep p monotonic
+                        cps = arr;
+                    }
+                    function remap(s) {
+                        if (s <= cps[0][0]) return cps[0][1];
+                        for (var i = 1; i < cps.length; i++) {
+                            if (s <= cps[i][0]) {
+                                var a = cps[i - 1],
+                                    b = cps[i],
+                                    t = (s - a[0]) / (b[0] - a[0] || 1);
+                                return a[1] + (b[1] - a[1]) * t;
+                            }
+                        }
+                        return cps[cps.length - 1][1];
+                    }
+                    buildRemap();
+
+                    // Draw scrub across the whole section (hero is frame 0)
+                    var prox = { v: 0 };
+                    gsap.to(prox, {
+                        v: 1,
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: ".ribbon-scroll",
+                            start: "top top",
+                            end: "bottom bottom",
+                            scrub: 0.6,
+                            onRefresh: buildRemap,
+                        },
+                        onUpdate: function () {
+                            draw(remap(prox.v));
+                        },
+                    });
+                    draw(remap(0)); // paint frame 0 immediately so the glowing pen sits at the start on load
+
+                    // Beat reveals – copy fades up, media chips fan out to their tuned scatter positions
+                    var chipPos = function (c) {
+                        var cs = getComputedStyle(c);
+                        return {
+                            x: parseFloat(cs.getPropertyValue("--tx")) || 0,
+                            y: parseFloat(cs.getPropertyValue("--ty")) || 0,
+                            rot: cs.getPropertyValue("--rot") || "0deg",
+                        };
+                    };
+                    gsap.utils.toArray(".beats .beat").forEach(function (beat) {
+                        var copy = beat.querySelectorAll(".copy .r");
+                        var chips = beat.querySelectorAll(".chip");
+                        gsap.set(copy, { opacity: 0, y: 28 });
+                        chips.forEach(function (c) {
+                            gsap.set(c, {
+                                opacity: 0,
+                                x: 0,
+                                y: 0,
+                                scale: 0.55,
+                                rotate: 0,
+                            });
+                        });
+                        var tl = gsap.timeline({
+                            scrollTrigger: {
+                                trigger: beat,
+                                start: "top 60%",
+                                end: "top 22%",
+                                toggleActions: "play none none reverse",
+                            },
+                        });
+                        tl.to(copy, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.7,
+                            stagger: 0.08,
+                            ease: "power3.out",
+                        });
+
+                        // ---- Beat 03 "proof": logos cascade in, stats cascade + count up ----
+                        if (beat.classList.contains("beat-proof")) {
+                            var logos = beat.querySelectorAll(".chip.logo");
+                            var statCards = beat.querySelectorAll(".chip.lg");
+                            tl.fromTo(
+                                logos,
+                                { opacity: 0, y: 24, scale: 0.92 },
+                                {
+                                    opacity: 1,
+                                    y: 0,
+                                    scale: 1,
+                                    duration: 0.5,
+                                    stagger: 0.07,
+                                    ease: "back.out(1.4)",
+                                },
+                                0.15,
+                            );
+                            tl.fromTo(
+                                statCards,
+                                { opacity: 0, y: 24, scale: 0.92 },
+                                {
+                                    opacity: 1,
+                                    y: 0,
+                                    scale: 1,
+                                    duration: 0.5,
+                                    stagger: 0.1,
+                                    ease: "back.out(1.5)",
+                                },
+                                0.55,
+                            );
+                            beat.querySelectorAll(".stat .n").forEach(
+                                function (n) {
+                                    var to =
+                                        parseFloat(
+                                            n.getAttribute("data-count"),
+                                        ) || 0;
+                                    var suf =
+                                        n.getAttribute("data-suffix") || "";
+                                    var o = { v: 0 };
+                                    tl.to(
+                                        o,
+                                        {
+                                            v: to,
+                                            duration: 1.1,
+                                            ease: "power2.out",
+                                            onUpdate: function () {
+                                                n.textContent =
+                                                    Math.round(o.v) + suf;
+                                            },
+                                        },
+                                        0.6,
+                                    );
+                                },
+                            );
+                            return; // skip the generic fan-in for this beat
+                        }
+
+                        chips.forEach(function (c, i) {
+                            var p = chipPos(c);
+                            tl.to(
+                                c,
+                                {
+                                    opacity: 1,
+                                    x: p.x,
+                                    y: p.y,
+                                    rotate: p.rot,
+                                    scale: 1,
+                                    duration: 0.7,
+                                    ease: "back.out(1.5)",
+                                },
+                                0.15 + i * 0.09,
+                            );
+                        });
+                    });
+
+                    // ---- Section transitions: gentle parallax depth between copy & burst as each beat passes ----
+                    gsap.utils.toArray(".beats .beat").forEach(function (beat) {
+                        var burst = beat.querySelector(".burst");
+                        var copy = beat.querySelector(".copy");
+                        var st = {
+                            trigger: beat,
+                            start: "top bottom",
+                            end: "bottom top",
+                            scrub: true,
+                        };
+                        if (burst)
+                            gsap.fromTo(
+                                burst,
+                                { yPercent: 6 },
+                                {
+                                    yPercent: -6,
+                                    ease: "none",
+                                    scrollTrigger: st,
+                                },
+                            );
+                        if (copy)
+                            gsap.fromTo(
+                                copy,
+                                { yPercent: -3 },
+                                {
+                                    yPercent: 4,
+                                    ease: "none",
+                                    scrollTrigger: st,
+                                },
+                            );
+                    });
+
+                    // (Beat 05 finale confetti now fires on CLICK of the CTA – wired globally below.)
+
+                    // ---- Magnetic primary CTA: eases toward the cursor while hovered ----
+                    var magBtn = document.querySelector(
+                        ".cta-beat .btn-primary",
+                    );
+                    var magMove = null,
+                        magLeave = null;
+                    if (magBtn) {
+                        var magX = gsap.quickTo(magBtn, "x", {
+                            duration: 0.4,
+                            ease: "power3",
+                        });
+                        var magY = gsap.quickTo(magBtn, "y", {
+                            duration: 0.4,
+                            ease: "power3",
+                        });
+                        magMove = function (e) {
+                            var r = magBtn.getBoundingClientRect();
+                            magX((e.clientX - (r.left + r.width / 2)) * 0.4);
+                            magY((e.clientY - (r.top + r.height / 2)) * 0.5);
+                        };
+                        magLeave = function () {
+                            magX(0);
+                            magY(0);
+                        };
+                        magBtn.addEventListener("mousemove", magMove);
+                        magBtn.addEventListener("mouseleave", magLeave);
+                    }
+
+                    // ---- Beat 01 cards: the whole card tilts in 3D toward the cursor. rotationX/Y are
+                    // separate transform components from the x/y/rotation/scale the scatter animation owns,
+                    // so GSAP composes them rather than fighting (no wrapper needed for a tilt). ----
+                    var stakesMove = null;
+                    var stakesCards = gsap.utils.toArray(
+                        ".beat-stakes .chip.photo",
+                    );
+                    if (stakesCards.length) {
+                        var tilters = stakesCards.map(function (c, i) {
+                            gsap.set(c, { transformPerspective: 650 });
+                            return {
+                                ry: gsap.quickTo(c, "rotationY", {
+                                    duration: 0.7,
+                                    ease: "power3",
+                                }),
+                                rx: gsap.quickTo(c, "rotationX", {
+                                    duration: 0.7,
+                                    ease: "power3",
+                                }),
+                                sgn: i % 2 === 0 ? 1 : -1, // alternate so they don't tilt in unison
+                                amt: 14 + (i % 3) * 3,
+                            };
+                        });
+                        stakesMove = function (e) {
+                            var nx = (e.clientX / window.innerWidth - 0.5) * 2;
+                            var ny = (e.clientY / window.innerHeight - 0.5) * 2;
+                            tilters.forEach(function (t) {
+                                t.ry(nx * t.amt * t.sgn);
+                                t.rx(-ny * t.amt);
+                            });
+                        };
+                        window.addEventListener("mousemove", stakesMove, {
+                            passive: true,
+                        });
+                    }
+
+                    return function () {
+                        penVisible = false;
+                        draw(0);
+                        if (heroMove)
+                            window.removeEventListener("mousemove", heroMove);
+                        if (heroST) heroST.kill();
+                        if (magBtn && magMove) {
+                            magBtn.removeEventListener("mousemove", magMove);
+                            magBtn.removeEventListener("mouseleave", magLeave);
+                            gsap.set(magBtn, { x: 0, y: 0 });
+                        }
+                        if (stakesMove)
+                            window.removeEventListener("mousemove", stakesMove);
+                    }; // cleanup when leaving desktop
+                });
+
+                /* ===== MOBILE: clean & intentional, no scrub drama ===== */
+                mm.add("(max-width:820px)", function () {
+                    draw(0); // ribbon stays a faint static ghost-track watermark (never competes with copy/photos)
+                    gsap.utils.toArray(".beats .beat").forEach(function (beat) {
+                        var copy = beat.querySelectorAll(".copy .r");
+                        var chips = beat.querySelectorAll(".chip"); // flow-wrapped on mobile via CSS
+                        gsap.set(copy, { opacity: 0, y: 20 });
+                        gsap.set(chips, { opacity: 0, y: 16 });
+                        var tl = gsap.timeline({
+                            scrollTrigger: {
+                                trigger: beat,
+                                start: "top 72%",
+                                toggleActions: "play none none reverse",
+                            },
+                        });
+                        tl.to(copy, {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.6,
+                            stagger: 0.06,
+                            ease: "power2.out",
+                        });
+                        tl.to(
+                            chips,
+                            {
+                                opacity: 1,
+                                y: 0,
+                                duration: 0.5,
+                                stagger: 0.07,
+                                ease: "power2.out",
+                            },
+                            0.1,
+                        );
+                        // count up any stats in this beat
+                        beat.querySelectorAll(".stat .n[data-count]").forEach(
+                            function (n) {
+                                var to =
+                                    parseFloat(n.getAttribute("data-count")) ||
+                                    0;
+                                var suf = n.getAttribute("data-suffix") || "";
+                                var o = { v: 0 };
+                                tl.to(
+                                    o,
+                                    {
+                                        v: to,
+                                        duration: 1,
+                                        ease: "power2.out",
+                                        onUpdate: function () {
+                                            n.textContent =
+                                                Math.round(o.v) + suf;
+                                        },
+                                    },
+                                    0.2,
+                                );
+                            },
+                        );
+                    });
+                });
+
+                window.addEventListener("load", function () {
+                    ScrollTrigger.refresh();
+                });
+            })();
+        </script>
+    </body>
+</html>
