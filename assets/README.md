@@ -15,9 +15,7 @@ placeholder (with the label), so nothing ever looks broken.
 | `beat01-unforgettable.jpg` | 01 — Stakes | The "unforgettable" hero gift — the version people screenshot |
 | `beat01-keepsake.jpg` | 01 — Stakes | A bespoke keepsake — kept on the desk for years |
 | `beat01-reveal.webp` | 01 — Stakes | "First impression" — says everything before you do (filename kept from earlier reveal art) |
-| `beat02-creative.jpg` | 02 — Guide | Creative / concepting — studio, sketches, ideation |
-| `beat02-product.jpg` | 02 — Guide | Production / making — real products in the UK/NL studio |
-| `beat02-fulfilment.jpg` | 02 — Guide | Fulfilment — hand-packing, pristine dispatch |
+| _(beat-02 photos retired — replaced by the studio tour video, see below)_ | | |
 | `beat04-event-gifts.jpg` | 04 — Transformation | Event gifts — launches / summits / on-stage |
 | `beat04-merchandise.jpg` | 04 — Transformation | Branded merchandise — apparel / drinkware / desk |
 | `beat04-vip-gifting.jpg` | 04 — Transformation | VIP gifting — high-touch, individual |
@@ -40,6 +38,17 @@ show the same on-brand placeholder. Add/remove cards by editing the `.marquee-ro
 | `work-keepsakes.jpg` | Keepsakes |
 | `work-stationery.jpg` | Stationery |
 | `work-tech.jpg` | Tech gifts |
+
+## Video — `tour.mp4` (square)
+
+The facilities tour is the centrepiece of **Beat 02** — a muted ambient loop that plays
+when the beat scrolls into view, with a gold play button that opens a lightbox (sound + controls).
+
+- **Format:** square (1:1) MP4, H.264 + AAC.
+- **Performance:** currently ~27 MB — fine for a prototype, but for production export a
+  **web-optimised** version (≈720–900px square, ~3–6 MB) and a separate higher-res for the lightbox if wanted.
+- **Recommended add:** a `tour-poster.jpg` (first frame) so reduced-motion users and the pre-play
+  state show a still rather than black — then set `poster="assets/tour-poster.jpg"` on both `<video>` tags.
 
 ## Client logos — cleared marks, mono SVG preferred (PNG w/ transparency fine)
 

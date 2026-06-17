@@ -83,6 +83,51 @@
                 opacity: 0.7;
             }
 
+            /* ---- branded intro overlay + pen-tip sparkles ---- */
+            #intro {
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                background: var(--paper);
+                display: grid;
+                place-items: center;
+                will-change: transform, opacity;
+            }
+            #introSvg {
+                width: min(32vmin, 260px);
+                height: auto;
+                overflow: visible;
+            }
+            #sparkles {
+                position: fixed;
+                inset: 0;
+                z-index: 70;
+                pointer-events: none;
+                overflow: hidden;
+            }
+            .spark {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 7px;
+                height: 7px;
+                margin: -3.5px 0 0 -3.5px;
+                border-radius: 50%;
+                background: radial-gradient(
+                    circle,
+                    #f0cd84,
+                    #b0863c 65%,
+                    transparent 72%
+                );
+                pointer-events: none;
+                will-change: transform, opacity;
+            }
+            /* no intro / sparkles for reduced-motion */
+            .reduced #intro,
+            .reduced #sparkles {
+                display: none;
+            }
+
             .hdr {
                 position: fixed;
                 inset: 0 0 auto 0;
@@ -109,10 +154,23 @@
                 text-decoration: none;
                 letter-spacing: -0.02em;
             }
-            .brand svg {
+            .brand-mark {
+                position: relative;
                 width: 22px;
                 height: 28px;
                 display: block;
+                flex: none;
+            }
+            .brand-mark svg {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                display: block;
+            }
+            /* gold "scroll progress" fill rises bottom-up over the green mark as you scroll (--sp = 0..1) */
+            .brand-fill {
+                clip-path: inset(calc((1 - var(--sp, 0)) * 100%) 0 0 0);
             }
             .nav {
                 display: flex;
@@ -242,13 +300,18 @@
                 right: 0;
                 bottom: 30px;
                 z-index: 2;
+                /* the text inverts against whatever is behind it: soft-dark over the paper, and it
+                   flips to light where the ribbon paints in behind it. (z-index here is NOT an isolated
+                   blend group, so the difference reaches the ribbon underneath.) */
+                mix-blend-mode: difference;
             }
             .hero-foot .wrap {
                 display: flex;
                 align-items: center;
                 gap: 26px;
                 flex-wrap: wrap;
-                color: var(--muted);
+                /* light greys so `difference` lands soft-dark on paper and light on the ribbon */
+                color: #bdbdbd;
                 font-size: 13px;
             }
             .hero-foot .names {
@@ -257,8 +320,8 @@
                 flex-wrap: wrap;
                 font-weight: 600;
                 letter-spacing: 0.16em;
-                color: var(--ink);
-                opacity: 0.55;
+                color: #d2d2d2;
+                opacity: 1;
                 text-transform: uppercase;
                 font-size: 13px;
             }
@@ -312,6 +375,27 @@
             .beat-hero h1 .word {
                 display: inline-block;
                 will-change: transform;
+            }
+            /* hand-drawn gold underline that draws on under "remember." */
+            .beat-hero h1 .word.remember {
+                position: relative;
+            }
+            .hero-flourish {
+                position: absolute;
+                left: 0;
+                bottom: -0.12em;
+                width: 100%;
+                height: 0.32em;
+                overflow: visible;
+                pointer-events: none;
+            }
+            .hero-flourish path {
+                fill: none;
+                stroke: var(--gild);
+                stroke-width: 4;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+                vector-effect: non-scaling-stroke;
             }
             /* anchored below the fixed header (≈60px) and above the trust bar so the cards never
                crowd the nav or overlap the headline column */
@@ -601,7 +685,8 @@
                 }
                 /* scattered beat chips + the hero cards drift; the proof grid stays put */
                 .burst .chip,
-                .hero-card .chip {
+                .hero-card .chip,
+                .burst .studio-video {
                     animation: chipFloatA 6s ease-in-out infinite;
                     will-change: translate;
                 }
@@ -826,18 +911,19 @@
             #proof .chip.logo .wordmark {
                 transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
             }
-            /* spotlight: while inspecting the wall, the un-hovered clients recede so each gets a moment */
-            #proof .logo-grid:hover .chip.logo {
+            /* spotlight (grid layout only): while inspecting the wall, the un-hovered clients recede.
+               Explicitly NOT in the orbit wheel – there the only response is the JS scale bounce. */
+            #proof .proof-burst:not(.orbit-on) .logo-grid:hover .chip.logo {
                 filter: brightness(0.82) saturate(0.8) contrast(0.96);
             }
-            #proof .logo-grid .chip.logo:hover {
+            #proof .proof-burst:not(.orbit-on) .chip.logo:hover {
                 filter: none;
                 border-color: var(--gild);
                 box-shadow: 0 30px 52px -22px rgba(0, 29, 0, 0.55);
                 z-index: 3;
             }
-            #proof .chip.logo:hover .logo-mark,
-            #proof .chip.logo:hover .wordmark {
+            #proof .proof-burst:not(.orbit-on) .chip.logo:hover .logo-mark,
+            #proof .proof-burst:not(.orbit-on) .chip.logo:hover .wordmark {
                 transform: scale(1.09);
             }
             #proof .chip.lg {
@@ -848,6 +934,66 @@
             }
             .reduced #proof .chip {
                 opacity: 1;
+            }
+
+            /* ---- Beat 03 desktop ORBIT: a wheel of the 8 brand logos going round in a perfect circle
+               (JS-driven loop). Enabled by `.orbit-on` (desktop only); mobile/reduced keep the grid.
+               NOTE: selectors are prefixed with #proof so they out-specify the base `#proof …` rules. ---- */
+            #proof .proof-burst.orbit-on {
+                display: block;
+                position: relative;
+                height: 600px;
+                min-height: 0;
+            }
+            #proof .orbit-on .logo-grid {
+                display: block;
+                position: absolute;
+                inset: 0;
+                pointer-events: none; /* no rollover – it's just a spinning wheel */
+            }
+            #proof .orbit-on .chip.logo {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 132px;
+                height: 84px;
+                /* centre the anchor on the orbit centre; JS sets x/y to place it on the ring */
+                margin: -42px 0 0 -66px;
+                /* clean, refined card so logos always read (incl. dark ones over the ribbon) */
+                background: var(--paper);
+                border: 1px solid var(--line);
+                border-radius: 16px;
+                box-shadow: 0 16px 34px -22px rgba(0, 29, 0, 0.4);
+                padding: 0;
+                pointer-events: auto; /* individually hoverable (the gaps stay click-through) */
+            }
+            #proof .orbit-on .chip.logo .logo-mark {
+                padding: 16px;
+            }
+            /* no visual hover state on the wheel – the only response is the JS 'knock'
+               (these neutralise the grid's hover styles, which would otherwise also match) */
+            #proof .orbit-on .chip.logo:hover {
+                border-color: var(--line);
+                box-shadow: 0 16px 34px -22px rgba(0, 29, 0, 0.4);
+            }
+            #proof .orbit-on .chip.logo:hover .logo-mark,
+            #proof .orbit-on .chip.logo:hover .wordmark {
+                transform: none;
+            }
+            /* the number-fact cards sit centred in the middle of the wheel */
+            #proof .orbit-on .stat-row {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                flex-direction: column;
+                align-items: center;
+                gap: 9px;
+                width: auto;
+                z-index: 20; /* stay readable above the orbiting logos */
+            }
+            #proof .orbit-on .stat-row .chip.lg {
+                width: 152px;
             }
             @media (max-width: 820px) {
                 #proof .logo-grid {
@@ -862,22 +1008,149 @@
                 }
             }
 
+            /* ---- Beat 02 studio-tour video (square, framed) + its lightbox ---- */
+            .studio-video {
+                position: relative;
+                z-index: 2;
+                width: min(370px, 80%);
+                aspect-ratio: 1 / 1;
+                border-radius: 24px;
+                overflow: hidden;
+                cursor: pointer;
+                background: linear-gradient(150deg, #1c5232, #0a3018 58%, #001d00);
+                box-shadow: 0 44px 90px -34px rgba(0, 29, 0, 0.7);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                rotate: -2.5deg; /* casual tilt while it's the autoplay thumbnail */
+            }
+            /* the pillar pills sit ON TOP of the video thumbnail (and let clicks pass through to it) */
+            #guide .burst .chip {
+                z-index: 4;
+                pointer-events: none;
+            }
+            .studio-vid {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+            .studio-cap {
+                position: absolute;
+                left: 18px;
+                bottom: 16px;
+                z-index: 2;
+                font-size: 12px;
+                font-weight: 600;
+                letter-spacing: 0.16em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.9);
+                text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+            }
+            .studio-play {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: 76px;
+                height: 76px;
+                border-radius: 50%;
+                border: none;
+                cursor: pointer;
+                color: var(--paper);
+                background: color-mix(in srgb, var(--gild) 90%, #000);
+                display: grid;
+                place-items: center;
+                box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.55);
+                transition:
+                    transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1),
+                    background 0.25s ease;
+            }
+            .studio-video:hover .studio-play {
+                transform: translate(-50%, -50%) scale(1.08);
+                background: var(--gild);
+            }
+            .studio-play svg {
+                width: 28px;
+                height: 28px;
+                margin-left: 4px;
+            }
+            /* lightbox */
+            .video-modal {
+                position: fixed;
+                inset: 0;
+                z-index: 1000;
+                display: grid;
+                place-items: center;
+                padding: 24px;
+                background: rgba(0, 12, 4, 0.86);
+                backdrop-filter: blur(6px);
+                opacity: 0;
+                visibility: hidden;
+                transition:
+                    opacity 0.3s ease,
+                    visibility 0.3s ease;
+            }
+            .video-modal.open {
+                opacity: 1;
+                visibility: visible;
+            }
+            .video-modal-vid {
+                width: min(86vmin, 760px);
+                aspect-ratio: 1 / 1;
+                border-radius: 16px;
+                background: #000;
+                box-shadow: 0 50px 120px -30px #000;
+            }
+            .video-modal-close {
+                position: absolute;
+                top: 22px;
+                right: 26px;
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                background: rgba(255, 255, 255, 0.08);
+                color: #fff;
+                font-size: 24px;
+                line-height: 1;
+                cursor: pointer;
+                transition: background 0.2s ease;
+            }
+            .video-modal-close:hover {
+                background: rgba(255, 255, 255, 0.18);
+            }
+
             .beat.cta-beat .wrap {
                 grid-template-columns: 1fr;
                 text-align: center;
                 justify-items: center;
+            }
+            /* reassurance pills arced above the headline – decorative overlay, never blocks the button/confetti */
+            .cta-arc {
+                position: absolute;
+                inset: 0;
+                min-height: 0;
+                pointer-events: none;
+            }
+            @media (max-width: 820px) {
+                /* on the stacked mobile layout the arc would collide with the copy – hide it */
+                .cta-arc {
+                    display: none;
+                }
             }
             /* the climax should land WITH the marquee, not a full screen above it:
                on desktop the CTA collapses to its content height + breathing room so both share a screen */
             @media (min-width: 821px) {
                 .beat.cta-beat {
                     min-height: auto;
-                    padding-top: 11vh;
+                    padding-top: 14vh;
                     padding-bottom: 4vh;
+                    position: relative; /* scope the arc overlay to this beat */
                 }
             }
             .beat.cta-beat .copy {
-                max-width: 30ch;
+                max-width: 34ch;
                 margin: 0 auto;
             }
             .beat.cta-beat .copy::before {
@@ -1046,6 +1319,12 @@
                 grid-template-columns: 1.4fr 1fr 1fr;
                 gap: 40px;
             }
+            .foot-logo {
+                width: 34px;
+                height: auto;
+                display: block;
+                margin-bottom: 22px;
+            }
             .foot h3 {
                 color: #fff;
                 font-size: 34px;
@@ -1160,15 +1439,31 @@
         </style>
     </head>
     <body>
+        <!-- branded intro: the B draws itself on a paper screen, then lifts to reveal the hero (built/animated in JS) -->
+        <div id="intro" aria-hidden="true">
+            <svg id="introSvg" viewBox="0 0 4235 5355"></svg>
+        </div>
+        <!-- pen-tip gold sparkle layer (particles appended here in JS) -->
+        <div id="sparkles" aria-hidden="true"></div>
+
         <header class="hdr" id="hdr">
             <a class="brand" href="#top">
-                <svg viewBox="0 0 4235 5355" aria-hidden="true">
-                    <path
-                        d="M2880.88 3136.41C3419.96 3095.14 3844.5 2992.93 4092.03 2467.63C4294.92 2037.09 4329.87 1540.92 3864.38 1275.66C3526.67 1083.24 3108.21 1148 2780.06 1325.45C2388.94 1536.92 2100 1938.46 1678.75 2089.91C1523.48 2145.73 1209.44 2187.72 1186.35 1957.53C1158.69 1681.97 1314.44 1398.56 1500.01 1206.24C1622.02 1079.81 1771.59 979.575 1894.42 854.019C2129.47 613.73 2356.15 146.799 1882.42 20.5923C1728.02 -20.5516 1560.76 0.645235 1421.45 78.0338C1408.38 85.3077 1364.44 110.279 1361.1 122.252L1400.19 303.525C1404.76 307.5 1452.17 281.329 1462.83 277.604C1611.27 225.612 1843.87 221.313 1971.01 326.247C2149.47 473.525 1864.38 637.251 1756.49 710.04C1651.52 780.88 1543.5 845.095 1443.51 923.659C1107.66 1187.59 817.241 1576.34 1062.74 2008.22C1179.19 2213.12 1305.37 2393.97 1558.35 2429.36C2372.58 2543.29 2798.1 1304.25 3603.3 1621.56C3845.68 1717.07 4046.93 1990.73 4025.1 2256.29C4009.55 2445.38 3728.9 2597.94 3570.16 2659.05C3369.87 2736.19 3170.8 2767.54 2958.9 2793.18C2745.03 2819.08 2439.84 2820.03 2264.94 2953.66C2073.42 3100.04 2072.03 3336.08 2214.62 3518.9C2466.04 3841.33 2845.56 3623.96 3176.9 3634.21C3461.45 3642.98 3741.29 3805.91 3697.07 4124.86C3685.28 4209.72 3653.78 4285.76 3583.58 4337.83C3326.45 4528.55 2771.71 4473.06 2468.2 4425.14C2242.68 4389.57 2020.7 4332.8 1800.41 4274.86L1795.78 4256.87C1901.08 3845.55 1822.49 3303.41 1465.94 3032.67C1187.11 2820.95 804.025 2855.75 659.682 3198.72C615.261 3304.31 552.072 3516.05 553.78 3627.83C556.669 3819.11 676.038 3981.68 820.231 4095.89C1043.62 4272.84 1325.87 4375.7 1601.69 4440.89C1607.22 4442.44 1608.75 4444.36 1608.53 4450.16C1607.42 4481.28 1586.72 4553.85 1577.32 4586.79C1455.69 5013.6 1024.5 5284.49 599.357 5066.85C435.316 4982.88 294.415 4842.85 189.92 4693.4L0 4840.31C145.172 5051.87 353.484 5264.79 611.04 5331.13C1085.02 5453.21 1446.9 5086.37 1636.04 4699.43C1672.32 4625.19 1698.93 4545.2 1735.13 4471.98L2395.42 4592.47C2895.23 4698.18 3809.23 4625.34 3968.29 4028.07C4093.67 3557.29 3658.88 3232.69 3217.63 3272.29C2969.65 3294.51 2600.46 3494.48 2370.12 3427.36C2307.63 3409.17 2230.77 3359.37 2266.58 3285.63C2337.78 3138.98 2738.78 3147.31 2880.86 3136.41H2880.88ZM834.954 3682.83C748.072 3552.85 642.672 3292.58 851.763 3222.32C1013.64 3167.9 1191.03 3264.86 1304.64 3374C1530.36 3590.86 1611.57 3913.44 1613.9 4218.07C1327.76 4116.09 1006.86 3940.04 834.954 3682.83Z"
-                        fill-rule="evenodd"
-                        fill="#143D26"
-                    />
-                </svg>
+                <span class="brand-mark" aria-hidden="true">
+                    <svg class="brand-base" viewBox="0 0 4235 5355">
+                        <path
+                            d="M2880.88 3136.41C3419.96 3095.14 3844.5 2992.93 4092.03 2467.63C4294.92 2037.09 4329.87 1540.92 3864.38 1275.66C3526.67 1083.24 3108.21 1148 2780.06 1325.45C2388.94 1536.92 2100 1938.46 1678.75 2089.91C1523.48 2145.73 1209.44 2187.72 1186.35 1957.53C1158.69 1681.97 1314.44 1398.56 1500.01 1206.24C1622.02 1079.81 1771.59 979.575 1894.42 854.019C2129.47 613.73 2356.15 146.799 1882.42 20.5923C1728.02 -20.5516 1560.76 0.645235 1421.45 78.0338C1408.38 85.3077 1364.44 110.279 1361.1 122.252L1400.19 303.525C1404.76 307.5 1452.17 281.329 1462.83 277.604C1611.27 225.612 1843.87 221.313 1971.01 326.247C2149.47 473.525 1864.38 637.251 1756.49 710.04C1651.52 780.88 1543.5 845.095 1443.51 923.659C1107.66 1187.59 817.241 1576.34 1062.74 2008.22C1179.19 2213.12 1305.37 2393.97 1558.35 2429.36C2372.58 2543.29 2798.1 1304.25 3603.3 1621.56C3845.68 1717.07 4046.93 1990.73 4025.1 2256.29C4009.55 2445.38 3728.9 2597.94 3570.16 2659.05C3369.87 2736.19 3170.8 2767.54 2958.9 2793.18C2745.03 2819.08 2439.84 2820.03 2264.94 2953.66C2073.42 3100.04 2072.03 3336.08 2214.62 3518.9C2466.04 3841.33 2845.56 3623.96 3176.9 3634.21C3461.45 3642.98 3741.29 3805.91 3697.07 4124.86C3685.28 4209.72 3653.78 4285.76 3583.58 4337.83C3326.45 4528.55 2771.71 4473.06 2468.2 4425.14C2242.68 4389.57 2020.7 4332.8 1800.41 4274.86L1795.78 4256.87C1901.08 3845.55 1822.49 3303.41 1465.94 3032.67C1187.11 2820.95 804.025 2855.75 659.682 3198.72C615.261 3304.31 552.072 3516.05 553.78 3627.83C556.669 3819.11 676.038 3981.68 820.231 4095.89C1043.62 4272.84 1325.87 4375.7 1601.69 4440.89C1607.22 4442.44 1608.75 4444.36 1608.53 4450.16C1607.42 4481.28 1586.72 4553.85 1577.32 4586.79C1455.69 5013.6 1024.5 5284.49 599.357 5066.85C435.316 4982.88 294.415 4842.85 189.92 4693.4L0 4840.31C145.172 5051.87 353.484 5264.79 611.04 5331.13C1085.02 5453.21 1446.9 5086.37 1636.04 4699.43C1672.32 4625.19 1698.93 4545.2 1735.13 4471.98L2395.42 4592.47C2895.23 4698.18 3809.23 4625.34 3968.29 4028.07C4093.67 3557.29 3658.88 3232.69 3217.63 3272.29C2969.65 3294.51 2600.46 3494.48 2370.12 3427.36C2307.63 3409.17 2230.77 3359.37 2266.58 3285.63C2337.78 3138.98 2738.78 3147.31 2880.86 3136.41H2880.88ZM834.954 3682.83C748.072 3552.85 642.672 3292.58 851.763 3222.32C1013.64 3167.9 1191.03 3264.86 1304.64 3374C1530.36 3590.86 1611.57 3913.44 1613.9 4218.07C1327.76 4116.09 1006.86 3940.04 834.954 3682.83Z"
+                            fill-rule="evenodd"
+                            fill="#143D26"
+                        />
+                    </svg>
+                    <svg class="brand-fill" viewBox="0 0 4235 5355">
+                        <path
+                            d="M2880.88 3136.41C3419.96 3095.14 3844.5 2992.93 4092.03 2467.63C4294.92 2037.09 4329.87 1540.92 3864.38 1275.66C3526.67 1083.24 3108.21 1148 2780.06 1325.45C2388.94 1536.92 2100 1938.46 1678.75 2089.91C1523.48 2145.73 1209.44 2187.72 1186.35 1957.53C1158.69 1681.97 1314.44 1398.56 1500.01 1206.24C1622.02 1079.81 1771.59 979.575 1894.42 854.019C2129.47 613.73 2356.15 146.799 1882.42 20.5923C1728.02 -20.5516 1560.76 0.645235 1421.45 78.0338C1408.38 85.3077 1364.44 110.279 1361.1 122.252L1400.19 303.525C1404.76 307.5 1452.17 281.329 1462.83 277.604C1611.27 225.612 1843.87 221.313 1971.01 326.247C2149.47 473.525 1864.38 637.251 1756.49 710.04C1651.52 780.88 1543.5 845.095 1443.51 923.659C1107.66 1187.59 817.241 1576.34 1062.74 2008.22C1179.19 2213.12 1305.37 2393.97 1558.35 2429.36C2372.58 2543.29 2798.1 1304.25 3603.3 1621.56C3845.68 1717.07 4046.93 1990.73 4025.1 2256.29C4009.55 2445.38 3728.9 2597.94 3570.16 2659.05C3369.87 2736.19 3170.8 2767.54 2958.9 2793.18C2745.03 2819.08 2439.84 2820.03 2264.94 2953.66C2073.42 3100.04 2072.03 3336.08 2214.62 3518.9C2466.04 3841.33 2845.56 3623.96 3176.9 3634.21C3461.45 3642.98 3741.29 3805.91 3697.07 4124.86C3685.28 4209.72 3653.78 4285.76 3583.58 4337.83C3326.45 4528.55 2771.71 4473.06 2468.2 4425.14C2242.68 4389.57 2020.7 4332.8 1800.41 4274.86L1795.78 4256.87C1901.08 3845.55 1822.49 3303.41 1465.94 3032.67C1187.11 2820.95 804.025 2855.75 659.682 3198.72C615.261 3304.31 552.072 3516.05 553.78 3627.83C556.669 3819.11 676.038 3981.68 820.231 4095.89C1043.62 4272.84 1325.87 4375.7 1601.69 4440.89C1607.22 4442.44 1608.75 4444.36 1608.53 4450.16C1607.42 4481.28 1586.72 4553.85 1577.32 4586.79C1455.69 5013.6 1024.5 5284.49 599.357 5066.85C435.316 4982.88 294.415 4842.85 189.92 4693.4L0 4840.31C145.172 5051.87 353.484 5264.79 611.04 5331.13C1085.02 5453.21 1446.9 5086.37 1636.04 4699.43C1672.32 4625.19 1698.93 4545.2 1735.13 4471.98L2395.42 4592.47C2895.23 4698.18 3809.23 4625.34 3968.29 4028.07C4093.67 3557.29 3658.88 3232.69 3217.63 3272.29C2969.65 3294.51 2600.46 3494.48 2370.12 3427.36C2307.63 3409.17 2230.77 3359.37 2266.58 3285.63C2337.78 3138.98 2738.78 3147.31 2880.86 3136.41H2880.88ZM834.954 3682.83C748.072 3552.85 642.672 3292.58 851.763 3222.32C1013.64 3167.9 1191.03 3264.86 1304.64 3374C1530.36 3590.86 1611.57 3913.44 1613.9 4218.07C1327.76 4116.09 1006.86 3940.04 834.954 3682.83Z"
+                            fill-rule="evenodd"
+                            fill="#b0863c"
+                        />
+                    </svg>
+                </span>
                 Bespoke-ly
             </a>
             <nav class="nav">
@@ -1203,7 +1498,18 @@
                             <span class="word">reason</span></span
                         ><span class="line"
                             ><span class="word">they</span>
-                            <span class="word soft">remember.</span></span
+                            <span class="word soft remember"
+                                >remember.<svg
+                                    class="hero-flourish"
+                                    viewBox="0 0 300 24"
+                                    preserveAspectRatio="none"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M5 15 C 55 8, 105 20, 152 13 C 205 6, 252 19, 295 12"
+                                    />
+                                </svg></span
+                            ></span
                         >
                     </h1>
                     <p class="hero-sub">
@@ -1488,89 +1794,52 @@
                             </p>
                         </div>
                         <div class="burst">
+                            <!-- facilities tour: muted ambient loop in view, click to expand with sound -->
                             <div
-                                class="chip photo"
-                                style="--tx: -138px; --ty: -92px; --rot: -6deg"
+                                class="studio-video"
+                                id="studioVideo"
+                                title="Watch the studio tour"
                             >
-                                <div class="media-wrap" data-label="Creative">
-                                    <img
-                                        class="chip-media"
-                                        src="assets/beat02-creative.jpg"
-                                        alt="Creative concepting and sketching at the Bespoke-ly studio"
-                                        loading="lazy"
-                                        onerror="this.classList.add('missing')"
+                                <video
+                                    class="studio-vid"
+                                    muted
+                                    loop
+                                    playsinline
+                                    preload="metadata"
+                                >
+                                    <source
+                                        src="assets/tour.mp4"
+                                        type="video/mp4"
                                     />
-                                </div>
-                                <div class="chip-cap">
-                                    <span class="ct">Creative Thinkers</span
-                                    ><span class="cs"
-                                        >Original, out-of-the-box concepts
-                                        tailored to your brand.</span
-                                    ><span class="chip-detail"
-                                        >Concepts, naming &amp; art direction —
-                                        your brief, reimagined.</span
-                                    >
-                                </div>
+                                </video>
+                                <span class="studio-cap">Inside the studio</span>
+                                <button
+                                    class="studio-play"
+                                    type="button"
+                                    aria-label="Play the studio tour with sound"
+                                >
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path d="M8 5v14l11-7z" fill="currentColor" />
+                                    </svg>
+                                </button>
                             </div>
                             <div
-                                class="chip photo"
-                                style="--tx: 138px; --ty: -12px; --rot: 5deg"
+                                class="chip tag"
+                                style="--tx: -150px; --ty: -142px; --rot: -6deg"
                             >
-                                <div class="media-wrap" data-label="Production">
-                                    <img
-                                        class="chip-media"
-                                        src="assets/beat02-product.jpg"
-                                        alt="Real products being made in the UK and NL studios"
-                                        loading="lazy"
-                                        onerror="this.classList.add('missing')"
-                                    />
-                                </div>
-                                <div class="chip-cap">
-                                    <span class="ct">Product Makers</span
-                                    ><span class="cs"
-                                        >Real products, made in our UK &amp; NL
-                                        studios.</span
-                                    ><span class="chip-detail"
-                                        >Prototyped, sampled &amp; produced
-                                        in-house.</span
-                                    >
-                                </div>
+                                <span class="ct">Creative Thinkers</span>
                             </div>
                             <div
-                                class="chip photo"
-                                style="--tx: -30px; --ty: 120px; --rot: -3deg"
+                                class="chip tag"
+                                style="--tx: 168px; --ty: -28px; --rot: 5deg"
                             >
-                                <div class="media-wrap" data-label="Fulfilment">
-                                    <img
-                                        class="chip-media"
-                                        src="assets/beat02-fulfilment.jpg"
-                                        alt="Gifts hand-packed and shipped pristine, worldwide"
-                                        loading="lazy"
-                                        onerror="this.classList.add('missing')"
-                                    />
-                                </div>
-                                <div class="chip-cap">
-                                    <span class="ct">Fulfilment Experts</span
-                                    ><span class="cs"
-                                        >Hand-packed and shipped, pristine,
-                                        worldwide.</span
-                                    ><span class="chip-detail"
-                                        >Kitting, warehousing &amp; global
-                                        dispatch, handled.</span
-                                    >
-                                </div>
+                                <span class="ct">Product Makers</span>
                             </div>
                             <div
-                                class="chip tag pos"
-                                style="--tx: 64px; --ty: -150px; --rot: 4deg"
+                                class="chip tag"
+                                style="--tx: -64px; --ty: 176px; --rot: -3deg"
                             >
-                                <span class="ct">One partner, not five</span>
-                            </div>
-                            <div
-                                class="chip tag pos"
-                                style="--tx: 150px; --ty: 116px; --rot: -4deg"
-                            >
-                                <span class="ct">Brief to doorstep</span>
+                                <span class="ct">Fulfilment Experts</span>
                             </div>
                         </div>
                     </div>
@@ -1743,9 +2012,7 @@
                                             data-count="94"
                                             data-suffix="%"
                                             >0</span
-                                        ><span class="l"
-                                            >come back for more</span
-                                        ></span
+                                        ><span class="l">return</span></span
                                     >
                                 </div>
                             </div>
@@ -1845,30 +2112,6 @@
                                     >
                                 </div>
                             </div>
-                            <div
-                                class="chip tag pos"
-                                style="--tx: 8px; --ty: -176px; --rot: 4deg"
-                            >
-                                <span class="ct">On-brand</span>
-                            </div>
-                            <div
-                                class="chip tag pos"
-                                style="--tx: -176px; --ty: 44px; --rot: -5deg"
-                            >
-                                <span class="ct">On-time, every time</span>
-                            </div>
-                            <div
-                                class="chip tag pos"
-                                style="--tx: 200px; --ty: 70px; --rot: 6deg"
-                            >
-                                <span class="ct">Pristine unboxing</span>
-                            </div>
-                            <div
-                                class="chip tag pos"
-                                style="--tx: 96px; --ty: 154px; --rot: 4deg"
-                            >
-                                <span class="ct">All the credit, yours</span>
-                            </div>
                         </div>
                     </div>
                 </article>
@@ -1904,6 +2147,33 @@
                                     <span class="arr">&rarr;</span></a
                                 >
                             </div>
+                        </div>
+                    </div>
+                    <!-- reassurance pills, arced like a rainbow above the headline (moved here from Beat 04) -->
+                    <div class="burst cta-arc" aria-hidden="true">
+                        <div
+                            class="chip tag pos"
+                            style="--tx: -335px; --ty: -80px; --rot: -13deg"
+                        >
+                            <span class="ct">On-time, every time</span>
+                        </div>
+                        <div
+                            class="chip tag pos"
+                            style="--tx: -178px; --ty: -156px; --rot: -8deg"
+                        >
+                            <span class="ct">On-brand</span>
+                        </div>
+                        <div
+                            class="chip tag pos"
+                            style="--tx: 182px; --ty: -150px; --rot: 7deg"
+                        >
+                            <span class="ct">Pristine unboxing</span>
+                        </div>
+                        <div
+                            class="chip tag pos"
+                            style="--tx: 340px; --ty: -82px; --rot: 12deg"
+                        >
+                            <span class="ct">All the credit, yours</span>
                         </div>
                     </div>
                 </article>
@@ -2022,7 +2292,20 @@
 
         <footer class="foot">
             <div class="wrap">
-                <div><h3>Gifting, designed and made to be remembered.</h3></div>
+                <div>
+                    <svg
+                        class="foot-logo"
+                        viewBox="0 0 4235 5355"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M2880.88 3136.41C3419.96 3095.14 3844.5 2992.93 4092.03 2467.63C4294.92 2037.09 4329.87 1540.92 3864.38 1275.66C3526.67 1083.24 3108.21 1148 2780.06 1325.45C2388.94 1536.92 2100 1938.46 1678.75 2089.91C1523.48 2145.73 1209.44 2187.72 1186.35 1957.53C1158.69 1681.97 1314.44 1398.56 1500.01 1206.24C1622.02 1079.81 1771.59 979.575 1894.42 854.019C2129.47 613.73 2356.15 146.799 1882.42 20.5923C1728.02 -20.5516 1560.76 0.645235 1421.45 78.0338C1408.38 85.3077 1364.44 110.279 1361.1 122.252L1400.19 303.525C1404.76 307.5 1452.17 281.329 1462.83 277.604C1611.27 225.612 1843.87 221.313 1971.01 326.247C2149.47 473.525 1864.38 637.251 1756.49 710.04C1651.52 780.88 1543.5 845.095 1443.51 923.659C1107.66 1187.59 817.241 1576.34 1062.74 2008.22C1179.19 2213.12 1305.37 2393.97 1558.35 2429.36C2372.58 2543.29 2798.1 1304.25 3603.3 1621.56C3845.68 1717.07 4046.93 1990.73 4025.1 2256.29C4009.55 2445.38 3728.9 2597.94 3570.16 2659.05C3369.87 2736.19 3170.8 2767.54 2958.9 2793.18C2745.03 2819.08 2439.84 2820.03 2264.94 2953.66C2073.42 3100.04 2072.03 3336.08 2214.62 3518.9C2466.04 3841.33 2845.56 3623.96 3176.9 3634.21C3461.45 3642.98 3741.29 3805.91 3697.07 4124.86C3685.28 4209.72 3653.78 4285.76 3583.58 4337.83C3326.45 4528.55 2771.71 4473.06 2468.2 4425.14C2242.68 4389.57 2020.7 4332.8 1800.41 4274.86L1795.78 4256.87C1901.08 3845.55 1822.49 3303.41 1465.94 3032.67C1187.11 2820.95 804.025 2855.75 659.682 3198.72C615.261 3304.31 552.072 3516.05 553.78 3627.83C556.669 3819.11 676.038 3981.68 820.231 4095.89C1043.62 4272.84 1325.87 4375.7 1601.69 4440.89C1607.22 4442.44 1608.75 4444.36 1608.53 4450.16C1607.42 4481.28 1586.72 4553.85 1577.32 4586.79C1455.69 5013.6 1024.5 5284.49 599.357 5066.85C435.316 4982.88 294.415 4842.85 189.92 4693.4L0 4840.31C145.172 5051.87 353.484 5264.79 611.04 5331.13C1085.02 5453.21 1446.9 5086.37 1636.04 4699.43C1672.32 4625.19 1698.93 4545.2 1735.13 4471.98L2395.42 4592.47C2895.23 4698.18 3809.23 4625.34 3968.29 4028.07C4093.67 3557.29 3658.88 3232.69 3217.63 3272.29C2969.65 3294.51 2600.46 3494.48 2370.12 3427.36C2307.63 3409.17 2230.77 3359.37 2266.58 3285.63C2337.78 3138.98 2738.78 3147.31 2880.86 3136.41H2880.88ZM834.954 3682.83C748.072 3552.85 642.672 3292.58 851.763 3222.32C1013.64 3167.9 1191.03 3264.86 1304.64 3374C1530.36 3590.86 1611.57 3913.44 1613.9 4218.07C1327.76 4116.09 1006.86 3940.04 834.954 3682.83Z"
+                            fill-rule="evenodd"
+                            fill="#ffffff"
+                        />
+                    </svg>
+                    <h3>Gifting, designed and made to be remembered.</h3>
+                </div>
                 <div class="col">
                     <h4>Studio</h4>
                     <a href="#guide">Creative</a><a href="#guide">Production</a
@@ -2040,6 +2323,32 @@
             </div>
         </footer>
 
+        <!-- Studio-tour lightbox: full view with sound + controls (opened from Beat 02) -->
+        <div
+            class="video-modal"
+            id="videoModal"
+            aria-hidden="true"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Studio tour"
+        >
+            <button
+                class="video-modal-close"
+                type="button"
+                aria-label="Close studio tour"
+            >
+                &times;
+            </button>
+            <video
+                class="video-modal-vid"
+                controls
+                playsinline
+                preload="none"
+            >
+                <source src="assets/tour.mp4" type="video/mp4" />
+            </video>
+        </div>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
         <!-- canvas-confetti: the Beat-05 finale burst (overlay canvas only – never touches scroll). Degrades silently if it fails to load. -->
@@ -2050,13 +2359,91 @@
                     "(prefers-reduced-motion: reduce)",
                 ).matches;
                 var hdr = document.getElementById("hdr");
+                var docEl = document.documentElement;
                 window.addEventListener(
                     "scroll",
                     function () {
                         hdr.classList.toggle("scrolled", window.scrollY > 40);
+                        // header B fills with gold in proportion to scroll progress
+                        var max = docEl.scrollHeight - window.innerHeight;
+                        docEl.style.setProperty(
+                            "--sp",
+                            max > 0
+                                ? Math.min(1, window.scrollY / max).toFixed(4)
+                                : 0,
+                        );
                     },
                     { passive: true },
                 );
+
+                /* ===== Beat 02 studio-tour video: muted ambient loop while in view, click to expand
+                   into a lightbox with sound + controls. Runs regardless of gsap/reduced-motion. ===== */
+                (function () {
+                    var frame = document.getElementById("studioVideo");
+                    var modal = document.getElementById("videoModal");
+                    if (!frame || !modal) return;
+                    var ambient = frame.querySelector(".studio-vid");
+                    var modalVid = modal.querySelector(".video-modal-vid");
+                    var closeBtn = modal.querySelector(".video-modal-close");
+                    var inView = false;
+
+                    // ambient: play only when on screen (and not while the lightbox is open); skip autoplay for reduced-motion
+                    if (ambient && !reduce && "IntersectionObserver" in window) {
+                        new IntersectionObserver(
+                            function (entries) {
+                                entries.forEach(function (en) {
+                                    inView = en.isIntersecting;
+                                    if (
+                                        inView &&
+                                        !modal.classList.contains("open")
+                                    ) {
+                                        ambient.play().catch(function () {});
+                                    } else {
+                                        ambient.pause();
+                                    }
+                                });
+                            },
+                            { threshold: 0.35 },
+                        ).observe(frame);
+                    }
+
+                    function openModal() {
+                        if (ambient) ambient.pause();
+                        modal.classList.add("open");
+                        modal.setAttribute("aria-hidden", "false");
+                        document.body.style.overflow = "hidden";
+                        if (modalVid) {
+                            try {
+                                modalVid.currentTime = ambient
+                                    ? ambient.currentTime
+                                    : 0;
+                            } catch (e) {}
+                            modalVid.muted = false;
+                            modalVid.play().catch(function () {});
+                        }
+                    }
+                    function closeModal() {
+                        modal.classList.remove("open");
+                        modal.setAttribute("aria-hidden", "true");
+                        document.body.style.overflow = "";
+                        if (modalVid) modalVid.pause();
+                        if (ambient && inView && !reduce)
+                            ambient.play().catch(function () {});
+                    }
+                    frame.addEventListener("click", openModal);
+                    if (closeBtn)
+                        closeBtn.addEventListener("click", closeModal);
+                    modal.addEventListener("click", function (e) {
+                        if (e.target === modal) closeModal();
+                    });
+                    document.addEventListener("keydown", function (e) {
+                        if (
+                            e.key === "Escape" &&
+                            modal.classList.contains("open")
+                        )
+                            closeModal();
+                    });
+                })();
 
                 var stroke = document.getElementById("revealStroke");
                 var penDot = document.getElementById("penDot");
@@ -2065,6 +2452,35 @@
                 stroke.style.strokeDasharray = L;
                 stroke.style.strokeDashoffset = L;
                 var penVisible = false; // desktop turns this on so the dot sits at the start on the hero (frame 0)
+
+                // pen-tip gold sparkle: a faint particle emitted from the pen as the ribbon paints (desktop/motion only)
+                var sparkLayer = document.getElementById("sparkles");
+                var lastSparkP = -1;
+                function spawnSpark() {
+                    if (!window.gsap || !sparkLayer) return;
+                    var r = penDot.getBoundingClientRect();
+                    if (!r.width) return;
+                    var el = document.createElement("div");
+                    el.className = "spark";
+                    el.style.left = r.left + r.width / 2 + "px";
+                    el.style.top = r.top + r.height / 2 + "px";
+                    sparkLayer.appendChild(el);
+                    gsap.fromTo(
+                        el,
+                        { opacity: 0.9, scale: gsap.utils.random(0.5, 1.15) },
+                        {
+                            opacity: 0,
+                            scale: 0,
+                            x: gsap.utils.random(-16, 16),
+                            y: gsap.utils.random(-30, -6),
+                            duration: gsap.utils.random(0.6, 1.15),
+                            ease: "power2.out",
+                            onComplete: function () {
+                                el.remove();
+                            },
+                        },
+                    );
+                }
 
                 // NOTE: the self-crossing draws as a flat union (one fill), so a small fragment of the second pass can show as the
                 // first pass brushes through. Left as-is intentionally – the clean fix is the designer splitting the artwork into
@@ -2096,6 +2512,11 @@
                         }
                         penDot.style.opacity = band;
                         penGlow.style.opacity = 0.9 * band;
+                        // throttle by draw-distance so faster scrolling = more sparkle
+                        if (Math.abs(p - lastSparkP) > 0.0045) {
+                            lastSparkP = p;
+                            spawnSpark();
+                        }
                     } else {
                         penDot.style.opacity = 0;
                         penGlow.style.opacity = 0;
@@ -2121,52 +2542,145 @@
                 }
                 gsap.registerPlugin(ScrollTrigger);
 
-                /* ===== HERO INTRO: split-line headline rises, product cards settle in (all screens) ===== */
-                var heroWords = gsap.utils.toArray(".beat-hero h1 .word");
-                var heroBits = gsap.utils.toArray(
-                    ".hero-eye, .hero-sub, .hero-cta, .hero-foot",
-                );
-                var heroCardChips = gsap.utils.toArray(".hero-card .chip");
-                gsap.set(heroWords, { yPercent: 118 });
-                gsap.set(heroBits, { opacity: 0, y: 18 });
-                heroCardChips.forEach(function (chip) {
-                    var rot =
-                        chip.parentNode.style.getPropertyValue("--rot") ||
-                        "0deg";
-                    chip._rot = rot;
-                    gsap.set(chip, {
-                        opacity: 0,
-                        scale: 0.86,
-                        y: 34,
-                        rotate: 0,
+                /* ===== HERO INTRO (headline rises, cards settle, "remember." underline draws) –
+                   played as the branded intro curtain lifts. ===== */
+                var heroIntroPlayed = false;
+                function playHeroIntro() {
+                    if (heroIntroPlayed) return;
+                    heroIntroPlayed = true;
+                    var heroWords = gsap.utils.toArray(".beat-hero h1 .word");
+                    var heroBits = gsap.utils.toArray(
+                        ".hero-eye, .hero-sub, .hero-cta, .hero-foot",
+                    );
+                    var heroCardChips = gsap.utils.toArray(".hero-card .chip");
+                    var flourish = document.querySelector(".hero-flourish path");
+                    gsap.set(heroWords, { yPercent: 118 });
+                    gsap.set(heroBits, { opacity: 0, y: 18 });
+                    heroCardChips.forEach(function (chip) {
+                        var rot =
+                            chip.parentNode.style.getPropertyValue("--rot") ||
+                            "0deg";
+                        chip._rot = rot;
+                        gsap.set(chip, {
+                            opacity: 0,
+                            scale: 0.86,
+                            y: 34,
+                            rotate: 0,
+                        });
                     });
-                });
-                gsap.timeline({ delay: 0.12, defaults: { ease: "power3.out" } })
-                    .to(heroWords, {
+                    if (flourish) {
+                        var flL = flourish.getTotalLength();
+                        gsap.set(flourish, {
+                            strokeDasharray: flL,
+                            strokeDashoffset: flL,
+                        });
+                    }
+                    var tl = gsap.timeline({
+                        delay: 0.1,
+                        defaults: { ease: "power3.out" },
+                    });
+                    tl.to(heroWords, {
                         yPercent: 0,
                         duration: 0.9,
                         stagger: 0.07,
                     })
-                    .to(
-                        heroBits,
-                        { opacity: 1, y: 0, duration: 0.7, stagger: 0.09 },
-                        0.3,
-                    )
-                    .to(
-                        heroCardChips,
-                        {
-                            opacity: 1,
-                            scale: 1,
-                            y: 0,
-                            rotate: function (i, t) {
-                                return t._rot;
+                        .to(
+                            heroBits,
+                            { opacity: 1, y: 0, duration: 0.7, stagger: 0.09 },
+                            0.3,
+                        )
+                        .to(
+                            heroCardChips,
+                            {
+                                opacity: 1,
+                                scale: 1,
+                                y: 0,
+                                rotate: function (i, t) {
+                                    return t._rot;
+                                },
+                                duration: 0.85,
+                                stagger: 0.12,
+                                ease: "back.out(1.5)",
                             },
-                            duration: 0.85,
-                            stagger: 0.12,
-                            ease: "back.out(1.5)",
+                            0.45,
+                        );
+                    if (flourish)
+                        tl.to(
+                            flourish,
+                            {
+                                strokeDashoffset: 0,
+                                duration: 0.75,
+                                ease: "power2.out",
+                            },
+                            0.95,
+                        );
+                }
+
+                /* ===== BRANDED INTRO: the B draws itself (reusing the centreline-reveal technique on a
+                   compact copy of the ribbon paths), then the paper curtain lifts to the hero. ===== */
+                (function () {
+                    var intro = document.getElementById("intro");
+                    var introSvg = document.getElementById("introSvg");
+                    var fillEl = document.getElementById("ribbon-fill");
+                    var strokeEl = document.getElementById("revealStroke");
+                    if (!intro || !introSvg || !fillEl || !strokeEl) {
+                        if (intro) intro.remove();
+                        playHeroIntro();
+                        return;
+                    }
+                    introSvg.innerHTML =
+                        '<defs><mask id="introMask" maskUnits="userSpaceOnUse" x="-500" y="-500" width="5235" height="6355">' +
+                        '<path id="introStroke" fill="none" stroke="#fff" stroke-width="440" stroke-linecap="round" stroke-linejoin="round" d="' +
+                        strokeEl.getAttribute("d") +
+                        '"/></mask></defs>' +
+                        '<path fill="#143D26" fill-rule="evenodd" mask="url(#introMask)" d="' +
+                        fillEl.getAttribute("d") +
+                        '"/>' +
+                        '<circle id="introDot" r="52" fill="#E7B968" opacity="0"/>';
+                    var iStroke = introSvg.querySelector("#introStroke");
+                    var iDot = introSvg.querySelector("#introDot");
+                    var iL = iStroke.getTotalLength();
+                    iStroke.style.strokeDasharray = iL;
+                    iStroke.style.strokeDashoffset = iL;
+                    document.body.style.overflow = "hidden"; // hold scroll while the curtain is up
+                    var lifted = false;
+                    function lift() {
+                        if (lifted) return;
+                        lifted = true;
+                        document.body.style.overflow = "";
+                        playHeroIntro();
+                        gsap.to(intro, {
+                            opacity: 0,
+                            yPercent: -5,
+                            duration: 0.6,
+                            ease: "power2.inOut",
+                            onComplete: function () {
+                                if (intro.parentNode) intro.remove();
+                            },
+                        });
+                    }
+                    gsap.to(
+                        { v: 0 },
+                        {
+                            v: 1,
+                            duration: 1.2,
+                            ease: "power1.inOut",
+                            onUpdate: function () {
+                                var p = this.targets()[0].v;
+                                iStroke.style.strokeDashoffset = iL * (1 - p);
+                                var pt = iStroke.getPointAtLength(
+                                    Math.min(iL, iL * p + 220),
+                                );
+                                iDot.setAttribute("cx", pt.x);
+                                iDot.setAttribute("cy", pt.y);
+                                iDot.style.opacity =
+                                    p > 0.02 && p < 0.97 ? 1 : 0;
+                            },
+                            onComplete: lift,
                         },
-                        0.45,
                     );
+                    setTimeout(lift, 3200); // safety: never trap the page behind the curtain
+                })();
 
                 /* ===== "Explore our work" marquee: seamless auto-drift that is also DRAGGABLE.
                    A single rAF owns the x position; auto-drift, hover-slow, drag and fling momentum all feed
@@ -2469,8 +2983,16 @@
                             arr.push([s, p]);
                             pPrev = p;
                         });
-                        // the ribbon should be fully painted by the last beat (the CTA) so it never looks cut off / unfinished
+                        // Complete the draw at the last beat (the CTA) so it tracks scroll all the way down.
+                        // But the CTA is now compact, so cap how much draw is LEFT for that short final stretch
+                        // (≥0.88 done by the transformation beat) – that moves the bulk onto the full beat-3→4
+                        // scroll and leaves only a gentle finish over the CTA, instead of a visible end-rush.
                         if (arr.length > 1) arr[arr.length - 1][1] = 1;
+                        if (arr.length > 2)
+                            arr[arr.length - 2][1] = Math.max(
+                                arr[arr.length - 2][1],
+                                0.88,
+                            );
                         arr.push([1, 1]);
                         arr.sort(function (a, b) {
                             return a[0] - b[0];
@@ -2551,20 +3073,20 @@
                             ease: "power3.out",
                         });
 
-                        // ---- Beat 03 "proof": logos cascade in, stats cascade + count up ----
+                        // ---- Beat 03 "proof": logos fade/scale in (x/y owned by the orbit), stats cascade + count up ----
                         if (beat.classList.contains("beat-proof")) {
                             var logos = beat.querySelectorAll(".chip.logo");
                             var statCards = beat.querySelectorAll(".chip.lg");
+                            // opacity + scale only – never x/y, so this composes with the orbit tween
                             tl.fromTo(
                                 logos,
-                                { opacity: 0, y: 24, scale: 0.92 },
+                                { opacity: 0, scale: 0.85 },
                                 {
                                     opacity: 1,
-                                    y: 0,
                                     scale: 1,
-                                    duration: 0.5,
-                                    stagger: 0.07,
-                                    ease: "back.out(1.4)",
+                                    duration: 0.6,
+                                    stagger: 0.06,
+                                    ease: "power2.out",
                                 },
                                 0.15,
                             );
@@ -2738,6 +3260,80 @@
                         if (stakesMove)
                             window.removeEventListener("mousemove", stakesMove);
                     }; // cleanup when leaving desktop
+                });
+
+                /* ===== WIDE DESKTOP (≥1100px): the brand logos orbit the centred number-fact cards.
+                   Its own breakpoint so the circle only runs where there's room for the centre cluster. ===== */
+                mm.add("(min-width:1100px)", function () {
+                    var proofBurst = document.querySelector(".proof-burst");
+                    if (!proofBurst) return;
+                    proofBurst.classList.add("orbit-on");
+                    var orbitLogos = gsap.utils.toArray(
+                        ".proof-burst .chip.logo",
+                    );
+                    var oN = orbitLogos.length,
+                        oR = 200; // perfect circle – single radius
+                    var orbitMeasure = function () {
+                        var r = proofBurst.getBoundingClientRect();
+                        oR = Math.max(
+                            160,
+                            Math.min(275, r.width / 2 - 56, r.height / 2 - 54),
+                        );
+                    };
+                    orbitMeasure();
+                    var orbitResize = function () {
+                        orbitMeasure();
+                    };
+                    window.addEventListener("resize", orbitResize);
+
+                    var orbit = { a: 0 };
+                    var orbitTween = gsap.to(orbit, {
+                        a: Math.PI * 2,
+                        duration: 46,
+                        ease: "none",
+                        repeat: -1,
+                        onUpdate: function () {
+                            for (var i = 0; i < oN; i++) {
+                                var ang = orbit.a + (i / oN) * Math.PI * 2;
+                                gsap.set(orbitLogos[i], {
+                                    x: Math.cos(ang) * oR,
+                                    y: Math.sin(ang) * oR,
+                                    // keep front-of-wheel logos above the far-side ones
+                                    zIndex: Math.round(Math.sin(ang) * 10),
+                                });
+                            }
+                        },
+                    });
+                    // rollover: a slight, slow, natural scale bounce – the logo grows then settles back,
+                    // like it's saying "hey". Driven via gsap so it scales in place with the orbit's x/y.
+                    var knockHandlers = orbitLogos.map(function (logo) {
+                        var h = function () {
+                            gsap.to(logo, {
+                                scale: 1.09,
+                                duration: 0.5,
+                                ease: "sine.inOut",
+                                yoyo: true,
+                                repeat: 1,
+                                overwrite: "auto",
+                            });
+                        };
+                        logo.addEventListener("mouseenter", h);
+                        return h;
+                    });
+                    return function () {
+                        orbitTween.kill();
+                        window.removeEventListener("resize", orbitResize);
+                        orbitLogos.forEach(function (logo, i) {
+                            logo.removeEventListener(
+                                "mouseenter",
+                                knockHandlers[i],
+                            );
+                        });
+                        proofBurst.classList.remove("orbit-on");
+                        gsap.set(orbitLogos, {
+                            clearProps: "x,y,scale,zIndex,rotation",
+                        });
+                    };
                 });
 
                 /* ===== MOBILE: clean & intentional, no scrub drama ===== */
