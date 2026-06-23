@@ -1932,10 +1932,8 @@
                                         src="assets/logo-netflix.svg"
                                         alt="Netflix"
                                         onload="
-                                            if (this.naturalWidth) {
-                                                var w = this.nextElementSibling;
-                                                if (w) w.style.display = 'none';
-                                            }
+                                            var w = this.nextElementSibling;
+                                            if (w) w.style.display = 'none';
                                         "
                                         onerror="this.style.display = 'none'"
                                     /><span class="wordmark">NETFLIX</span>
@@ -1947,10 +1945,8 @@
                                         src="assets/logo-nike.svg"
                                         alt="Nike"
                                         onload="
-                                            if (this.naturalWidth) {
-                                                var w = this.nextElementSibling;
-                                                if (w) w.style.display = 'none';
-                                            }
+                                            var w = this.nextElementSibling;
+                                            if (w) w.style.display = 'none';
                                         "
                                         onerror="this.style.display = 'none'"
                                     /><span class="wordmark">NIKE</span>
@@ -1961,10 +1957,8 @@
                                         src="assets/logo-openai.svg"
                                         alt="OpenAI"
                                         onload="
-                                            if (this.naturalWidth) {
-                                                var w = this.nextElementSibling;
-                                                if (w) w.style.display = 'none';
-                                            }
+                                            var w = this.nextElementSibling;
+                                            if (w) w.style.display = 'none';
                                         "
                                         onerror="this.style.display = 'none'"
                                     /><span class="wordmark">OPENAI</span>
@@ -1975,10 +1969,8 @@
                                         src="assets/logo-spotify.svg"
                                         alt=""
                                         onload="
-                                            if (this.naturalWidth) {
-                                                var w = this.nextElementSibling;
-                                                if (w) w.style.display = 'none';
-                                            }
+                                            var w = this.nextElementSibling;
+                                            if (w) w.style.display = 'none';
                                         "
                                         onerror="this.style.display = 'none'"
                                     /><span class="wordmark">SPOTIFY</span>
@@ -1989,10 +1981,8 @@
                                         src="assets/logo-google.svg"
                                         alt=""
                                         onload="
-                                            if (this.naturalWidth) {
-                                                var w = this.nextElementSibling;
-                                                if (w) w.style.display = 'none';
-                                            }
+                                            var w = this.nextElementSibling;
+                                            if (w) w.style.display = 'none';
                                         "
                                         onerror="this.style.display = 'none'"
                                     /><span class="wordmark">GOOGLE</span>
@@ -2003,10 +1993,8 @@
                                         src="assets/logo-uber.svg"
                                         alt=""
                                         onload="
-                                            if (this.naturalWidth) {
-                                                var w = this.nextElementSibling;
-                                                if (w) w.style.display = 'none';
-                                            }
+                                            var w = this.nextElementSibling;
+                                            if (w) w.style.display = 'none';
                                         "
                                         onerror="this.style.display = 'none'"
                                     /><span class="wordmark">UBER</span>
@@ -2017,10 +2005,8 @@
                                         src="assets/logo-hsbc.svg"
                                         alt="HSBC"
                                         onload="
-                                            if (this.naturalWidth) {
-                                                var w = this.nextElementSibling;
-                                                if (w) w.style.display = 'none';
-                                            }
+                                            var w = this.nextElementSibling;
+                                            if (w) w.style.display = 'none';
                                         "
                                         onerror="this.style.display = 'none'"
                                     /><span class="wordmark">HSBC</span>
@@ -2031,10 +2017,8 @@
                                         src="assets/logo-007.svg"
                                         alt=""
                                         onload="
-                                            if (this.naturalWidth) {
-                                                var w = this.nextElementSibling;
-                                                if (w) w.style.display = 'none';
-                                            }
+                                            var w = this.nextElementSibling;
+                                            if (w) w.style.display = 'none';
                                         "
                                         onerror="this.style.display = 'none'"
                                     /><span class="wordmark">007</span>
@@ -3306,6 +3290,87 @@
                         });
                     }
 
+                    // ---- Beat 01 photo cards fan apart on hover so the cards tucked behind
+                    // the front one become visible (they overlap at rest). We spread each card
+                    // out from the group's centre + a little outward rotation – partially, not
+                    // fully – then ease back when the pointer leaves the cluster. x/y/rotation
+                    // are the scatter components the (one-time) reveal owns and leaves static,
+                    // so we tween from each card's rest and restore it; the 3D cursor-tilt
+                    // (rotationX/Y) composes on top, untouched. ----
+                    var fanMove = null;
+                    if (stakesCards.length) {
+                        var fanCards = stakesCards.map(function (c) {
+                            var p = chipPos(c);
+                            return {
+                                el: c,
+                                rest: p,
+                                baseRot: parseFloat(p.rot) || 0,
+                            };
+                        });
+                        var fanCx =
+                            fanCards.reduce(function (s, f) {
+                                return s + f.rest.x;
+                            }, 0) / fanCards.length;
+                        var FAN_SPREAD = 1.45; // <1 = none, higher = more separation
+                        var fanOpen = false;
+                        var fanTo = function (open) {
+                            if (open === fanOpen) return;
+                            fanOpen = open;
+                            fanCards.forEach(function (f) {
+                                gsap.to(f.el, {
+                                    x: open
+                                        ? fanCx + (f.rest.x - fanCx) * FAN_SPREAD
+                                        : f.rest.x,
+                                    y: f.rest.y,
+                                    rotation: open
+                                        ? f.baseRot + (f.rest.x < fanCx ? -3 : 3)
+                                        : f.baseRot,
+                                    duration: 0.55,
+                                    ease: "power3.out",
+                                    overwrite: "auto",
+                                });
+                            });
+                        };
+                        // Open when the pointer is within the cards' combined bounds (+ a small
+                        // pad). Using the live bounds gives natural hysteresis: once fanned the
+                        // cluster is wider, so the cursor stays "inside" until it clears the whole
+                        // spread – no flicker from the cards overflowing the burst box.
+                        var fanRaf = 0,
+                            fanX = -1e4,
+                            fanY = -1e4;
+                        var checkFan = function () {
+                            fanRaf = 0;
+                            var minX = 1e9,
+                                minY = 1e9,
+                                maxX = -1e9,
+                                maxY = -1e9;
+                            fanCards.forEach(function (f) {
+                                var r = f.el.getBoundingClientRect();
+                                if (!r.width) return;
+                                if (r.left < minX) minX = r.left;
+                                if (r.top < minY) minY = r.top;
+                                if (r.right > maxX) maxX = r.right;
+                                if (r.bottom > maxY) maxY = r.bottom;
+                            });
+                            var pad = 18;
+                            fanTo(
+                                fanX > minX - pad &&
+                                    fanX < maxX + pad &&
+                                    fanY > minY - pad &&
+                                    fanY < maxY + pad,
+                            );
+                        };
+                        fanMove = function (e) {
+                            fanX = e.clientX;
+                            fanY = e.clientY;
+                            if (!fanRaf)
+                                fanRaf = requestAnimationFrame(checkFan);
+                        };
+                        window.addEventListener("mousemove", fanMove, {
+                            passive: true,
+                        });
+                    }
+
                     // ---- Cursor-phobic pills: when the pointer comes near a floating pill it
                     // darts away once and springs back, like a startled little fish. It re-arms
                     // only after the pointer leaves a wider ring, so each approach earns exactly
@@ -3384,6 +3449,8 @@
                         }
                         if (stakesMove)
                             window.removeEventListener("mousemove", stakesMove);
+                        if (fanMove)
+                            window.removeEventListener("mousemove", fanMove);
                         if (pillBoopMove)
                             window.removeEventListener("mousemove", pillBoopMove);
                     }; // cleanup when leaving desktop
