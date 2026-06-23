@@ -4,25 +4,46 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Bespoke-ly – Be the reason they remember</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap"
-            rel="stylesheet"
-        />
+        <!-- Brand typeface: Sofia Pro, self-hosted from assets/fonts/ -->
         <style>
+            /* Headings use Sofia Pro Medium (500); body uses Sofia Pro Light (300). */
+            @font-face {
+                font-family: "Sofia Pro";
+                font-style: normal;
+                font-weight: 300;
+                font-display: swap;
+                src: url("assets/fonts/SofiaPro-Light.woff2") format("woff2");
+            }
+            @font-face {
+                font-family: "Sofia Pro";
+                font-style: normal;
+                font-weight: 400;
+                font-display: swap;
+                src: url("assets/fonts/SofiaPro-Regular.woff2") format("woff2");
+            }
+            @font-face {
+                font-family: "Sofia Pro";
+                font-style: normal;
+                font-weight: 500;
+                font-display: swap;
+                src: url("assets/fonts/SofiaPro-Medium.woff2") format("woff2");
+            }
             :root {
-                --paper: #f4f1e8;
-                --paper-2: #ebe6d7;
-                --line: #d8d2bf;
-                --ink: #11241a;
+                --paper: #ffffff;
+                --paper-2: #f7f6f2;
+                --line: #e5e5e5;
+                --ink: #17331c;
                 --muted: #54655a;
-                --green: #143d26;
+                --green: #17331c;
                 --ribbon: #001d00;
                 --gild: #b0863c;
-                --display: "Fraunces", Georgia, serif;
+                /* inactive (un-painted) state of the large ribbon "B" */
+                --b-inactive: #e5e5e5;
+                --display:
+                    "Sofia Pro", -apple-system, BlinkMacSystemFont,
+                    "Segoe UI", sans-serif;
                 --body:
-                    "Instrument Sans", -apple-system, BlinkMacSystemFont,
+                    "Sofia Pro", -apple-system, BlinkMacSystemFont,
                     "Segoe UI", sans-serif;
                 --maxw: 1240px;
                 --rw: 185vw;
@@ -38,6 +59,7 @@
                 background: var(--paper);
                 color: var(--ink);
                 font-family: var(--body);
+                font-weight: 300;
                 font-size: 18px;
                 line-height: 1.6;
                 -webkit-font-smoothing: antialiased;
@@ -47,7 +69,7 @@
             h2,
             h3 {
                 font-family: var(--display);
-                font-weight: 400;
+                font-weight: 500;
                 line-height: 1.02;
                 margin: 0;
                 letter-spacing: -0.015em;
@@ -150,9 +172,11 @@
                 gap: 11px;
                 font-family: var(--display);
                 font-size: 21px;
+                font-weight: 500;
                 color: var(--green);
                 text-decoration: none;
-                letter-spacing: -0.02em;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
             }
             .brand-mark {
                 position: relative;
@@ -464,8 +488,8 @@
                 overflow: visible;
             }
             #ribbon-track {
-                fill: var(--ribbon);
-                opacity: 0.05;
+                fill: var(--b-inactive);
+                opacity: 1;
             }
             #ribbon-fill {
                 fill: url(#satin);
@@ -521,7 +545,7 @@
                 background: radial-gradient(
                     130% 105% at 45% 50%,
                     var(--paper) 66%,
-                    rgba(244, 241, 232, 0.55) 82%,
+                    rgba(255, 255, 255, 0.55) 82%,
                     transparent
                 );
             }
@@ -611,13 +635,21 @@
                 align-items: center;
                 width: auto;
                 gap: 10px;
-                padding: 12px 18px;
+                /* asymmetric vertical padding (13 top / 11 bottom) nudges the single line of
+                   text down ~1px to compensate for the empty descender space that otherwise
+                   makes it read as sitting high */
+                padding: 13px 18px 11px;
                 border-radius: 100px;
+                /* float above the (now larger) photo cards, which come later in the DOM */
+                z-index: 7;
             }
             .chip.tag .ct {
                 font-family: var(--body);
                 font-size: 14px;
-                font-weight: 600;
+                font-weight: 500;
+                line-height: 1;
+                display: inline-flex;
+                align-items: center;
             }
             /* negative "stakes" pills read muted/desaturated, then decay away on scroll */
             .chip.tag.neg {
@@ -625,7 +657,6 @@
             }
             .chip.tag.neg .ct {
                 color: var(--muted);
-                font-weight: 500;
             }
             /* the "unforgettable" card wins the contrast: warm gild ring + lift */
             .chip.photo.win .media-wrap {
@@ -650,6 +681,7 @@
                 color: var(--gild);
                 font-weight: 700;
                 font-size: 13px;
+                line-height: 1;
             }
 
             /* ---- Ambient idle float: the movable cards/pills drift gently at all times.
@@ -739,6 +771,34 @@
             }
             .chip.photo.lg {
                 width: 240px;
+            }
+            /* Bigger image cards on larger displays – width only, so the pills (content-sized
+               .chip.tag) and the scatter/parallax transforms are untouched. The photo aspect
+               ratio scales the height to match. The stacked mobile grid (≤820px, set below)
+               overrides these with its own % widths, so phones are unaffected. */
+            @media (min-width: 1200px) {
+                .chip.photo {
+                    width: 244px;
+                }
+                .chip.photo.lg {
+                    width: 276px;
+                }
+            }
+            @media (min-width: 1500px) {
+                .chip.photo {
+                    width: 272px;
+                }
+                .chip.photo.lg {
+                    width: 308px;
+                }
+            }
+            @media (min-width: 1800px) {
+                .chip.photo {
+                    width: 300px;
+                }
+                .chip.photo.lg {
+                    width: 340px;
+                }
             }
             /* gradient + label sit behind the <img> so a not-yet-supplied file still reads as an intentional placeholder */
             .media-wrap {
@@ -3246,6 +3306,71 @@
                         });
                     }
 
+                    // ---- Cursor-phobic pills: when the pointer comes near a floating pill it
+                    // darts away once and springs back, like a startled little fish. It re-arms
+                    // only after the pointer leaves a wider ring, so each approach earns exactly
+                    // one boop (not a continuous follow). x/y is the scatter component the reveal
+                    // owns then leaves static, so we nudge from the resting position and let it
+                    // elastic back. Pointer-tracking is throttled to one rAF per frame. ----
+                    var pillBoopMove = null;
+                    var phobicPills = gsap.utils.toArray(".burst .chip.tag");
+                    if (phobicPills.length) {
+                        var booped = phobicPills.map(function (pill) {
+                            return {
+                                el: pill,
+                                rest: chipPos(pill),
+                                armed: true,
+                                tl: null,
+                            };
+                        });
+                        var PILL_NEAR = 58, // ring that triggers the dart (cursor must get close)
+                            PILL_RELEASE = 88, // must clear this before re-arming
+                            PILL_PUSH = 16; // how far it boops away (kept small + soft)
+                        var pillRaf = 0,
+                            curX = -1e4,
+                            curY = -1e4;
+                        var checkPills = function () {
+                            pillRaf = 0;
+                            booped.forEach(function (b) {
+                                var r = b.el.getBoundingClientRect();
+                                if (!r.width) return;
+                                var dx = r.left + r.width / 2 - curX;
+                                var dy = r.top + r.height / 2 - curY;
+                                var dist = Math.hypot(dx, dy);
+                                if (b.armed && dist < PILL_NEAR) {
+                                    b.armed = false;
+                                    var len = dist || 1;
+                                    if (b.tl) b.tl.kill();
+                                    b.tl = gsap
+                                        .timeline()
+                                        .to(b.el, {
+                                            x: b.rest.x + (dx / len) * PILL_PUSH,
+                                            y: b.rest.y + (dy / len) * PILL_PUSH,
+                                            duration: 0.45,
+                                            ease: "sine.out",
+                                        })
+                                        .to(b.el, {
+                                            x: b.rest.x,
+                                            y: b.rest.y,
+                                            duration: 1.2,
+                                            ease: "power2.out",
+                                        });
+                                } else if (!b.armed && dist > PILL_RELEASE) {
+                                    b.armed = true; // cursor retreated – ready again
+                                }
+                            });
+                        };
+                        pillBoopMove = function (e) {
+                            curX = e.clientX;
+                            curY = e.clientY;
+                            if (!pillRaf)
+                                pillRaf = requestAnimationFrame(checkPills);
+                        };
+                        window.addEventListener("mousemove", pillBoopMove, {
+                            passive: true,
+                        });
+                    }
+
                     return function () {
                         penVisible = false;
                         draw(0);
@@ -3259,6 +3384,8 @@
                         }
                         if (stakesMove)
                             window.removeEventListener("mousemove", stakesMove);
+                        if (pillBoopMove)
+                            window.removeEventListener("mousemove", pillBoopMove);
                     }; // cleanup when leaving desktop
                 });
 
