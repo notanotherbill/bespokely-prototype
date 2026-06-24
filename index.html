@@ -299,7 +299,7 @@
                 margin-bottom: 26px;
             }
             .beat-hero h1 {
-                font-size: clamp(46px, 8.2vw, 108px);
+                font-size: clamp(46px, 7vw, 90px);
                 max-width: 14ch;
             }
             .beat-hero h1 .soft {
@@ -774,29 +774,30 @@
             }
             /* Bigger image cards on larger displays – width only, so the pills (content-sized
                .chip.tag) and the scatter/parallax transforms are untouched. The photo aspect
-               ratio scales the height to match. The stacked mobile grid (≤820px, set below)
-               overrides these with its own % widths, so phones are unaffected. */
+               ratio scales the height to match. Scoped to .beats so the hero showpiece cards
+               keep their smaller size and never reach into the headline. The stacked mobile
+               grid (≤820px, set below) overrides these with its own % widths. */
             @media (min-width: 1200px) {
-                .chip.photo {
+                .beats .chip.photo {
                     width: 244px;
                 }
-                .chip.photo.lg {
+                .beats .chip.photo.lg {
                     width: 276px;
                 }
             }
             @media (min-width: 1500px) {
-                .chip.photo {
+                .beats .chip.photo {
                     width: 272px;
                 }
-                .chip.photo.lg {
+                .beats .chip.photo.lg {
                     width: 308px;
                 }
             }
             @media (min-width: 1800px) {
-                .chip.photo {
+                .beats .chip.photo {
                     width: 300px;
                 }
-                .chip.photo.lg {
+                .beats .chip.photo.lg {
                     width: 340px;
                 }
             }
@@ -1192,6 +1193,12 @@
                 inset: 0;
                 min-height: 0;
                 pointer-events: none;
+                /* The pill cluster and the headline share the beat's vertical centre, and the
+                   Sofia Pro headline is tall enough that the inner pills would sit over the
+                   first line. Lift the whole arc clear of it. Scaled to the viewport so it
+                   tracks the headline's own clamp() sizing – more lift on wide screens (where
+                   the headline is largest and the overlap is worst), less on smaller ones. */
+                transform: translateY(calc(-1 * clamp(48px, 5.5vw, 110px)));
             }
             @media (max-width: 820px) {
                 /* on the stacked mobile layout the arc would collide with the copy – hide it */
@@ -2693,6 +2700,15 @@
                         lifted = true;
                         document.body.style.overflow = "";
                         playHeroIntro();
+                        // ScrollTrigger measured the page while the curtain held scroll
+                        // (body overflow:hidden, no scrollbar). Restoring it reintroduces the
+                        // scrollbar and reflows the layout, so re-measure now that the real
+                        // layout is in place – otherwise scroll-driven elements (e.g. the final
+                        // beat's arc pills) sit offset until a manual resize forces a recalc.
+                        if (window.ScrollTrigger)
+                            requestAnimationFrame(function () {
+                                ScrollTrigger.refresh();
+                            });
                         gsap.to(intro, {
                             opacity: 0,
                             yPercent: -5,
@@ -3194,6 +3210,11 @@
 
                     // ---- Section transitions: gentle parallax depth between copy & burst as each beat passes ----
                     gsap.utils.toArray(".beats .beat").forEach(function (beat) {
+                        // The CTA pills are positioned deterministically (flex-centre + the
+                        // reveal's fixed translate). Skipping the scroll-scrubbed parallax here
+                        // keeps them on their intended arc on first paint, regardless of load
+                        // path – no dependency on ScrollTrigger refresh timing.
+                        if (beat.classList.contains("cta-beat")) return;
                         var burst = beat.querySelector(".burst");
                         var copy = beat.querySelector(".copy");
                         var st = {
@@ -3592,6 +3613,15 @@
                 window.addEventListener("load", function () {
                     ScrollTrigger.refresh();
                 });
+                // The Sofia Pro web font loads asynchronously and changes text heights once it
+                // swaps in, shifting the document AFTER ScrollTrigger measured its start/end
+                // positions. That left scroll-driven elements (e.g. the final beat's arc pills)
+                // offset until a manual resize forced a recalc. Refresh once the fonts settle.
+                if (document.fonts && document.fonts.ready) {
+                    document.fonts.ready.then(function () {
+                        ScrollTrigger.refresh();
+                    });
+                }
             })();
         </script>
     </body>
